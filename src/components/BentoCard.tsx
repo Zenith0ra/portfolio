@@ -46,7 +46,7 @@ export function BentoCard({
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="block"
+                className="block h-full"
             >
                 {content}
             </a>
