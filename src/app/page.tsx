@@ -11,6 +11,7 @@ import {
   MapPin,
   Mail,
 } from "lucide-react";
+import Image from "next/image";
 import { BentoCard } from "@/components/BentoCard";
 import { GlowingOrb } from "@/components/GlowingOrb";
 
@@ -58,8 +59,14 @@ export default function Home() {
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.3 }}
               className="h-24 w-24 flex-shrink-0 rounded-2xl bg-gradient-to-br from-cyan-400 via-purple-500 to-orange-400 p-[2px]"
             >
-              <div className="flex h-full w-full items-center justify-center rounded-2xl bg-zinc-950 text-3xl font-bold">
-                Z
+              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-zinc-950">
+                <Image
+                  src="/avatar.jpg"
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
               </div>
             </motion.div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Palette, Copy, Check, RefreshCw } from "lucide-react";
 import Link from "next/link";
@@ -22,10 +22,10 @@ function hexToRgb(hex: string): RGB | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
     : null;
 }
 
@@ -138,10 +138,6 @@ export default function ColorConverterPage() {
     const b = Math.floor(Math.random() * 256);
     updateFromRgb(r, g, b);
   };
-
-  useEffect(() => {
-    updateFromHex("#6366f1");
-  }, [updateFromHex]);
 
   const hexString = hex.toUpperCase();
   const rgbString = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;

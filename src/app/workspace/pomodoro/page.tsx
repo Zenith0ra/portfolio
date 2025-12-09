@@ -41,18 +41,6 @@ export default function PomodoroPage() {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
-      // Timer finished
-      if (mode === "work") {
-        setSessions((prev) => prev + 1);
-        switchMode("break");
-      } else {
-        switchMode("work");
-      }
-      // Play notification sound
-      if (typeof window !== "undefined" && "Notification" in window) {
-        new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Xi3RkYHODj5mYkYN0aGJzgpGam5WJfHFqb3qHkpaWkYh9dHBweIOMkZOSj4l/eXZ1eX+EiYyOjo2Jg316eHl7foKGiYqKiYaDgH17e3x9f4KDhYaGhoWDgYB+fX1+f4GCg4SEhIOCgYB/fn5+f4CBgoKDg4OCgoGAf39/f4CAgYGCgoKCgoGBgICAf4CAgIGBgYGBgYGBgYGAgICAgICAgIGBgYGBgYGBgYCAgICAgICAgIGBgQ==").play().catch(() => {});
-      }
     }
 
     return () => {
@@ -60,7 +48,26 @@ export default function PomodoroPage() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft, mode, switchMode]);
+  }, [isRunning, timeLeft]);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      // Timer finished
+      const timer = setTimeout(() => {
+        if (mode === "work") {
+          setSessions((prev) => prev + 1);
+          switchMode("break");
+        } else {
+          switchMode("work");
+        }
+        // Play notification sound
+        if (typeof window !== "undefined" && "Notification" in window) {
+          new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp2Xi3RkYHODj5mYkYN0aGJzgpGam5WJfHFqb3qHkpaWkYh9dHBweIOMkZOSj4l/eXZ1eX+EiYyOjo2Jg316eHl7foKGiYqKiYaDgH17e3x9f4KDhYaGhoWDgYB+fX1+f4GCg4SEhIOCgYB/fn5+f4CBgoKDg4OCgoGAf39/f4CAgYGCgoKCgoGBgICAf4CAgIGBgYGBgYGBgYGAgICAgICAgIGBgYGBgYGBgYCAgICAgICAgIGBgQ==").play().catch(() => { });
+        }
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft, mode, switchMode]);
 
   const toggleTimer = () => {
     setIsRunning(!isRunning);
@@ -72,8 +79,8 @@ export default function PomodoroPage() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const progress = mode === "work" 
-    ? ((WORK_TIME - timeLeft) / WORK_TIME) * 100 
+  const progress = mode === "work"
+    ? ((WORK_TIME - timeLeft) / WORK_TIME) * 100
     : ((BREAK_TIME - timeLeft) / BREAK_TIME) * 100;
 
   return (
@@ -105,18 +112,16 @@ export default function PomodoroPage() {
           <div className="flex rounded-xl bg-white/5 border border-white/10 p-1">
             <button
               onClick={() => switchMode("work")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium transition-all ${
-                mode === "work" ? "bg-orange-500/20 text-orange-400" : "text-zinc-500 hover:text-white"
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium transition-all ${mode === "work" ? "bg-orange-500/20 text-orange-400" : "text-zinc-500 hover:text-white"
+                }`}
             >
               <Brain className="h-4 w-4" />
               Work
             </button>
             <button
               onClick={() => switchMode("break")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium transition-all ${
-                mode === "break" ? "bg-green-500/20 text-green-400" : "text-zinc-500 hover:text-white"
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium transition-all ${mode === "break" ? "bg-green-500/20 text-green-400" : "text-zinc-500 hover:text-white"
+                }`}
             >
               <Coffee className="h-4 w-4" />
               Break
@@ -128,8 +133,8 @@ export default function PomodoroPage() {
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.3 }} className="mb-8">
           <div className="relative w-64 h-64 mx-auto">
             {/* Progress Ring */}
-            <svg 
-              viewBox="0 0 100 100" 
+            <svg
+              viewBox="0 0 100 100"
               className="w-full h-full transform -rotate-90"
             >
               <circle
@@ -168,13 +173,12 @@ export default function PomodoroPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="flex justify-center gap-4 mb-8">
           <button
             onClick={toggleTimer}
-            className={`flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-lg font-medium transition-all ${
-              isRunning
+            className={`flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-lg font-medium transition-all ${isRunning
                 ? "bg-white/10 text-white hover:bg-white/20"
                 : mode === "work"
-                ? "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
-                : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-            }`}
+                  ? "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
+                  : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+              }`}
           >
             {isRunning ? (
               <>
