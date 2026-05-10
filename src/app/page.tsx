@@ -6,6 +6,7 @@ import {
   BookOpen,
   Boxes,
   Code2,
+  Crosshair,
   Sparkles,
   User,
   MapPin,
@@ -161,22 +162,44 @@ export default function Home() {
             <p className="mt-1 text-sm text-zinc-500">Open source projects</p>
           </BentoCard>
 
-          {/* Workspace */}
+          {/* Arknights */}
           <BentoCard
             className="group"
             glowColor="orange"
             delay={4}
-            href="/workspace"
+            href="/arknights"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="rounded-xl bg-orange-500/10 p-3">
-                <Boxes className="h-6 w-6 text-orange-400" />
+                <Crosshair className="h-6 w-6 text-orange-400" />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-medium text-orange-300">
+                  New
+                </span>
+                <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-white">Arknights</h3>
+            <p className="mt-1 text-sm text-zinc-500">Operator notes & field archive</p>
+          </BentoCard>
+
+          {/* Workspace */}
+          <BentoCard
+            className="group"
+            glowColor="cyan"
+            delay={5}
+            href="/workspace"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="rounded-xl bg-cyan-500/10 p-3">
+                <Boxes className="h-6 w-6 text-cyan-400" />
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400">
                   New
                 </span>
-                <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
             </div>
             <h3 className="text-lg font-semibold text-white">Workspace</h3>
@@ -187,7 +210,7 @@ export default function Home() {
           <BentoCard
             className="group"
             glowColor="purple"
-            delay={5}
+            delay={6}
             href="/about"
           >
             <div className="flex items-start justify-between mb-4">
@@ -202,7 +225,7 @@ export default function Home() {
         </div>
 
         {/* Quote */}
-        <BentoCard glowColor="purple" delay={6}>
+        <BentoCard glowColor="purple" delay={7}>
           <div className="flex items-center justify-between">
             <p className="font-mono text-sm text-zinc-500">
               <span className="text-purple-400">&quot;</span>
