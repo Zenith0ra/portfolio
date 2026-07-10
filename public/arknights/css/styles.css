@@ -1,23 +1,23 @@
 :root {
   color-scheme: dark;
-  --bg: #080a0d;
-  --bg-soft: #10141a;
-  --panel: rgba(20, 25, 32, 0.86);
-  --panel-strong: #171d25;
+  --bg: #050505;
+  --bg-soft: #0a0a0a;
+  --panel: rgba(20, 20, 20, 0.86);
+  --panel-strong: #141414;
   --line: rgba(255, 255, 255, 0.14);
   --line-strong: rgba(255, 255, 255, 0.28);
   --text: #f4f7fb;
   --muted: #9ca7b4;
   --dim: #697382;
-  --yellow: #f6c443;
-  --yellow-deep: #a97800;
-  --blue: #67d3ff;
+  --yellow: #ff6b35;
+  --yellow-deep: #c54a1a;
+  --blue: #00d4ff;
   --red: #ff625f;
   --green: #70e5aa;
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
   --radius: 8px;
-  --mono: "Cascadia Mono", "Roboto Mono", Consolas, monospace;
-  --sans: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  --sans: "Outfit", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
 }
 
 * {
