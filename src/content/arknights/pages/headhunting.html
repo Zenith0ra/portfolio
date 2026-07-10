@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="明日方舟寻访概率终端：计算下一位 6★期望、目标干员概率、保底与多六星分布。"
+      content="明日方舟寻访概率终端：依据官方公示概率，计算6星干员获取期望、目标干员累计概率及多枚6星分布。"
     />
     <title>寻访概率 | Arknights Terminal</title>
     <link rel="stylesheet" href="../assets/css/headhunting.css" />
@@ -34,7 +34,7 @@
           </button>
           <button class="nav-tab" data-tab="multi" type="button">
             <span class="tab-icon">Σ</span>
-            多六星分布
+            多枚6星分布
           </button>
           <button class="nav-tab" data-tab="rules" type="button">
             <span class="tab-icon">?</span>
@@ -45,7 +45,7 @@
         <div class="status-tile">
           <p>当前模型</p>
           <strong>2% 基础概率</strong>
-          <span>50 抽后每抽 +2%，最高 100%</span>
+          <span>连续50次后每次+2%，最高100%</span>
         </div>
 
         <nav class="site-links" aria-label="站内导航">
@@ -59,23 +59,23 @@
         <section class="hero-band">
           <div>
             <p class="eyebrow">HEADHUNTING ANALYTICS</p>
-            <h2>把“还要多少抽”算清楚</h2>
+            <h2>干员寻访概率计算</h2>
             <p>
-              支持标准、中坚、限定、联动、回归等寻访规则的概率估算；可计算下一位 6★期望、指定抽数内出货概率、目标 UP 干员概率与多六星分布。
+              依据官方公示概率与机制，计算【标准寻访】、【中坚寻访】、【限定寻访】、【联动寻访】中6星干员的获取期望、目标干员累计概率及多枚6星干员的概率分布。
             </p>
           </div>
           <div class="signal-board" aria-label="概率核心参数">
-            <span>BASE 02.00%</span>
-            <span>PITY +02.00%</span>
-            <span>MAX 100%</span>
+            <span>基础 02.00%</span>
+            <span>递增 +02.00%</span>
+            <span>上限 100%</span>
           </div>
         </section>
 
         <section class="quick-questions" aria-label="快捷问题">
-          <button data-preset="next" type="button">我下一位 6★期望几抽？</button>
-          <button data-preset="hundred" type="button">100 抽至少 1 个 6★？</button>
-          <button data-preset="limited" type="button">限定池 300 抽目标概率？</button>
-          <button data-preset="collab" type="button">联动 120 抽保底怎么算？</button>
+          <button data-preset="next" type="button">下一位6星干员的获取期望</button>
+          <button data-preset="hundred" type="button">100次寻访内获得6星干员的概率</button>
+          <button data-preset="limited" type="button">限定寻访300次获得目标干员的概率</button>
+          <button data-preset="collab" type="button">联动寻访120次必得机制</button>
         </section>
 
         <section class="control-strip" aria-label="通用参数">
@@ -90,7 +90,7 @@
             </select>
           </label>
           <label>
-            <span>已连续未出 6★</span>
+            <span>已连续未获得6星干员</span>
             <input id="currentPity" type="number" min="0" max="98" value="0" />
           </label>
           <label>
@@ -106,24 +106,24 @@
               <p class="eyebrow">NEXT 6★</p>
               <h3>下一位 6★干员</h3>
             </div>
-            <p>基于当前未出 6★次数，精确计算下一位 6★的期望、分位点与指定抽数内概率。</p>
+            <p>基于当前未获得6星干员次数，精确计算下一位 6★的期望、分位点与指定次数内概率。</p>
           </div>
 
           <div class="metric-grid">
             <article class="metric-card">
               <span>期望还需</span>
               <strong id="expectedNextSix">--</strong>
-              <small>抽获得下一位 6★</small>
+              <small>次寻访获得下一位6星干员</small>
             </article>
             <article class="metric-card">
-              <span>指定抽数内</span>
+              <span>指定次数内</span>
               <strong id="chanceNextSix">--</strong>
               <small>至少获得 1 位 6★</small>
             </article>
             <article class="metric-card">
               <span>必定不晚于</span>
               <strong id="guaranteedNextSix">--</strong>
-              <small>抽触发 6★</small>
+              <small>次寻访必定获得6星干员</small>
             </article>
             <article class="metric-card">
               <span>90% 分位</span>
@@ -188,7 +188,7 @@
               <span>计入硬保底 / 兑换直接兜底</span>
             </label>
             <label>
-              <span>总上限抽数</span>
+              <span>总上限次数</span>
               <input id="hardCapPulls" type="number" min="1" max="600" value="300" />
             </label>
             <label class="check-row">
@@ -196,11 +196,11 @@
               <span>计入目标保底：触发后下一位 6★必为目标</span>
             </label>
             <label>
-              <span>目标保底触发抽数</span>
+              <span>目标保底触发次数</span>
               <input id="directionalPulls" type="number" min="1" max="600" value="150" />
             </label>
             <label>
-              <span>已累计未获目标抽数</span>
+              <span>已累计未获目标次数</span>
               <input id="noTargetPulls" type="number" min="0" max="600" value="0" />
             </label>
           </div>
@@ -209,10 +209,10 @@
             <article class="metric-card">
               <span>期望还需</span>
               <strong id="expectedTarget">--</strong>
-              <small>抽获得目标</small>
+              <small>次寻访获得目标</small>
             </article>
             <article class="metric-card">
-              <span>指定抽数内</span>
+              <span>指定次数内</span>
               <strong id="chanceTarget">--</strong>
               <small>获得目标概率</small>
             </article>
@@ -224,7 +224,7 @@
             <article class="metric-card">
               <span>90% 分位</span>
               <strong id="p90Target">--</strong>
-              <small>高把握抽数参考</small>
+              <small>高把握次数参考</small>
             </article>
           </div>
 
@@ -238,7 +238,7 @@
             </article>
             <article class="table-panel">
               <div class="panel-title">
-                <h4>推荐抽数</h4>
+                <h4>推荐次数</h4>
                 <span>目标累计概率</span>
               </div>
               <div class="data-table" id="targetTable"></div>
@@ -252,24 +252,24 @@
               <p class="eyebrow">DISTRIBUTION</p>
               <h3>多枚 6★分布</h3>
             </div>
-            <p>计算计划抽数内获得 0、1、2、3 枚及更多 6★的概率，同时给出 6★数量期望。</p>
+            <p>计算计划次数内获得 0、1、2、3 枚及更多 6★的概率，同时给出 6★数量期望。</p>
           </div>
 
           <div class="metric-grid compact">
             <article class="metric-card">
               <span>6★数量期望</span>
               <strong id="expectedSixCount">--</strong>
-              <small>计划抽数内平均值</small>
+              <small>计划次数内平均值</small>
             </article>
             <article class="metric-card">
               <span>至少 2 位</span>
               <strong id="chanceAtLeastTwo">--</strong>
-              <small>多出货概率</small>
+              <small>获得2位及以上</small>
             </article>
             <article class="metric-card">
               <span>没有 6★</span>
               <strong id="chanceZeroSix">--</strong>
-              <small>吃满沉默概率</small>
+              <small>未获得6星干员</small>
             </article>
           </div>
 
@@ -300,7 +300,7 @@
             </article>
             <article>
               <h4>概率提升</h4>
-              <p>50 次未获得 6★后，下次 6★概率按 2 个百分点递增；获得 6★后回到 2%。因此从 0 垫开始，最晚第 99 抽获得 6★。</p>
+              <p>50 次未获得 6★后，下次 6★概率按 2 个百分点递增；获得 6★后回到 2%。因此从 0 开始，最晚第 99 次寻访获得6星干员。</p>
               <p class="official-line">官方短摘：<q>下一次获得6星干员的概率将恢复到2%</q></p>
               <a class="source-link" href="https://ak.hypergryph.com/news/201904370.html" target="_blank" rel="noreferrer">概率公示</a>
             </article>
@@ -312,7 +312,7 @@
             </article>
             <article>
               <h4>限时标准</h4>
-              <p>限时标准单 UP 6★可按 50% 目标占比计算，并可勾选目标保底，触发抽数填 150。</p>
+              <p>限时标准单 UP 6★可按 50% 目标占比计算，并可勾选目标保底，触发次数填 150。</p>
               <p class="official-line">官方短摘：<q>定向选调</q> / <q>在当期寻访中仅生效一次</q></p>
               <a class="source-link" href="https://ak.hypergryph.com/news/2023033352" target="_blank" rel="noreferrer">定向选调公告</a>
             </article>
@@ -357,10 +357,10 @@
         </div>
         <div class="notice-content">
           <h3>用途</h3>
-          <p>本应用用于辅助理解《明日方舟》各类寻访的概率问题：下一位 6★预计还要几抽、已经垫了若干抽时的概率变化、指定抽数内至少获得一位 6★的概率、目标 UP 干员的累计概率，以及计划抽数内可能获得多少位 6★。</p>
+          <p>本应用用于辅助理解《明日方舟》各类寻访的概率问题：下一位6星干员的获取期望、已累计若干次时的概率变化、指定次数内至少获得一位6星干员的概率、目标 UP 干员的累计概率，以及计划次数内可能获得多少位6星干员。</p>
 
           <h3>首次使用步骤</h3>
-          <p>先选择寻访体系，再填写“已连续未出 6★”和“计划寻访次数”。如果只关心任意 6★，查看“下一位 6★”即可；如果关心某位 UP 或限定干员，进入“目标干员”设置目标占比、硬保底或兑换上限。</p>
+          <p>先选择寻访体系，再填写“已连续未获得6星干员”和“计划寻访次数”。如果只关心任意 6★，查看“下一位 6★”即可；如果关心某位 UP 或限定干员，进入“目标干员”设置目标占比、硬保底或兑换上限。</p>
 
           <h3>重要说明</h3>
           <p>页面使用官网公告中的机制名称、关键数值和短摘句整理，用于计算和理解概率，不替代游戏内官方寻访规则原文。限定、联动、跨年、回归等特殊池常有独立计数或额外机制，使用时请确认当期公告。</p>

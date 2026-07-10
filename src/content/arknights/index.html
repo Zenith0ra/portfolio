@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Hou Linzhi 的明日方舟寻访概率终端：基于官方公示概率，精确计算下一位 6★期望、目标干员概率与多六星分布。"
+      content="依据《明日方舟》官方公示概率，计算标准、中坚、限定、联动寻访中6星干员的获取期望、目标干员累计概率及多枚6星分布。"
     />
     <title>Arknights Terminal | Hou Linzhi</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
@@ -35,18 +35,18 @@
       <main>
         <section class="hero-panel">
           <div class="hero-copy">
-            <p class="eyebrow">Rhodes Island / Probability Lab</p>
-            <h1>把"还要多少抽"算清楚。</h1>
+            <p class="eyebrow">Rhodes Island / 寻访概率分析</p>
+            <h1>干员寻访概率计算工具</h1>
             <p class="hero-lead">
-              基于明日方舟官方公示概率，逐抽计算下一位 6★期望、目标 UP 干员累计概率与多六星分布。支持标准、中坚、限定、联动等寻访体系，可建模定向选调与硬保底兜底。
+              依据《明日方舟》官方公示的抽取概率与机制，计算【标准寻访】、【中坚寻访】、【限定寻访】、【联动寻访】中6星干员的获取期望、目标干员累计概率及多枚6星干员的概率分布。
             </p>
             <div class="hero-actions">
-              <a class="button primary" href="pages/headhunting.html">打开寻访概率终端</a>
+              <a class="button primary" href="pages/headhunting.html">进入寻访概率终端</a>
               <a class="button ghost" href="https://houlinzhi.com">返回主站</a>
             </div>
           </div>
 
-          <div class="terminal-card" aria-label="罗德岛终端状态">
+          <div class="terminal-card" aria-label="概率参数">
             <div class="terminal-toolbar">
               <span></span>
               <span></span>
@@ -60,9 +60,9 @@
                 <span></span>
               </div>
               <div class="terminal-readout">
-                <p>Probability Core</p>
-                <strong>2% Base / +2% Pity</strong>
-                <span>50 抽后递增 · 最晚 99 抽</span>
+                <p>概率参数</p>
+                <strong>基础 2% / 50次后递增</strong>
+                <span>每次 +2% · 最晚第99次必得</span>
               </div>
               <div class="terminal-stats">
                 <div>
@@ -74,8 +74,8 @@
                   <span>规则条目</span>
                 </div>
                 <div>
-                  <b>120</b>
-                  <span>联动硬保底</span>
+                  <b>300</b>
+                  <span>限定累计次数</span>
                 </div>
               </div>
             </div>
@@ -86,23 +86,23 @@
           <a class="feature-card" href="pages/headhunting.html">
             <span class="card-code">CALC-00</span>
             <h2>寻访概率终端</h2>
-            <p>下一位 6★期望、目标 UP 概率、保底与多六星分布，附官方规则摘录与来源链接。</p>
+            <p>6星干员获取期望、目标干员累计概率、多枚6星分布，附官方规则摘录与来源链接。</p>
           </a>
         </section>
 
         <section class="dashboard-section">
           <div class="section-heading">
             <p class="eyebrow">Capabilities</p>
-            <h2>终端能力</h2>
+            <h2>工具能力</h2>
           </div>
           <div class="dashboard-grid">
             <article class="status-panel">
               <div class="panel-heading">
                 <span>Model</span>
-                <strong>精确概率模型</strong>
+                <strong>概率提升机制</strong>
               </div>
               <p>
-                逐抽计算 2% 基础概率与 50 抽后每抽 +2% 的递增机制，给出期望、分位点与首次出现概率曲线。
+                依据官方公示：连续50次未获得6星干员后，每次寻访获得6星干员的概率提升2%，直至达到100%时必定获得。获得6星干员后概率恢复至2%。
               </p>
             </article>
 
@@ -112,27 +112,27 @@
                 <strong>多种寻访体系</strong>
               </div>
               <p>
-                标准、中坚、限定、联动、特殊寻访各有独立计数规则，按当期公告切换即可。
+                【标准寻访】累计次数跨池继承；【中坚寻访】独立计数；【限定寻访】与【联动寻访】结束时清零。按当期公告选择对应体系。
               </p>
             </article>
 
             <article class="status-panel">
               <div class="panel-heading">
                 <span>Target</span>
-                <strong>目标保底建模</strong>
+                <strong>目标干员概率</strong>
               </div>
               <p>
-                支持定向选调、300 抽兑换、120 抽硬保底等兜底机制，计算目标 UP 的真实获取概率。
+                支持【定向选调】、累计寻访300次额外获得限定干员、联动120次必得等机制，计算指定目标6星干员的获取概率。
               </p>
             </article>
 
             <article class="status-panel">
               <div class="panel-heading">
                 <span>Source</span>
-                <strong>基于官方公示</strong>
+                <strong>官方公示依据</strong>
               </div>
               <p>
-                规则文档摘录鹰角官方公告关键数值与短摘句，附来源链接，可随时回原文核对。
+                规则文档摘录鹰角网络官方公告的机制名称、关键数值与原文短句，附来源链接，可随时回原文核对。
               </p>
             </article>
           </div>
