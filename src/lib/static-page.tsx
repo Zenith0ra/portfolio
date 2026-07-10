@@ -5,14 +5,7 @@ import Script from "next/script";
 const routeRewrites: Array<[RegExp, string]> = [
   [/href="(?:\.\.\/)?index\.html"/g, 'href="/arknights"'],
   [/href="pages\/headhunting\.html"/g, 'href="/arknights/headhunting"'],
-  [/href="pages\/operators\.html"/g, 'href="/arknights/operators"'],
-  [/href="pages\/events\.html"/g, 'href="/arknights/events"'],
-  [/href="pages\/notes\.html"/g, 'href="/arknights/notes"'],
   [/href="headhunting\.html"/g, 'href="/arknights/headhunting"'],
-  [/href="operators\.html"/g, 'href="/arknights/operators"'],
-  [/href="events\.html"/g, 'href="/arknights/events"'],
-  [/href="notes\.html"/g, 'href="/arknights/notes"'],
-  [/href="\/pages\/operators\.html"/g, 'href="/arknights/operators"'],
   [/href="\/assets\//g, 'href="/arknights/'],
   [/src="(?:\.\.\/)?assets\//g, 'src="/arknights/'],
 ];

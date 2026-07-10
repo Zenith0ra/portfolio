@@ -16,20 +16,3 @@ if (navToggle && nav) {
     navToggle.setAttribute("aria-expanded", String(isOpen));
   });
 }
-
-const chips = document.querySelectorAll("[data-filter]");
-const operatorCards = document.querySelectorAll(".operator-card[data-tags]");
-
-chips.forEach((chip) => {
-  chip.addEventListener("click", () => {
-    const filter = chip.dataset.filter;
-
-    chips.forEach((item) => item.classList.remove("active"));
-    chip.classList.add("active");
-
-    operatorCards.forEach((card) => {
-      const tags = card.dataset.tags || "";
-      card.hidden = filter !== "all" && !tags.split(" ").includes(filter);
-    });
-  });
-});

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Hou Linzhi 的明日方舟专题站：干员记录、活动档案、养成计划与个人笔记。"
+      content="Hou Linzhi 的明日方舟寻访概率终端：基于官方公示概率，精确计算下一位 6★期望、目标干员概率与多六星分布。"
     />
     <title>Arknights Terminal | Hou Linzhi</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
@@ -17,7 +17,7 @@
           <span class="brand-mark" aria-hidden="true">AK</span>
           <span>
             <strong>Arknights Terminal</strong>
-            <small>houlinzhi.com archive</small>
+            <small>houlinzhi.com</small>
           </span>
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
@@ -28,9 +28,6 @@
         <nav class="site-nav" id="site-nav" aria-label="主导航">
           <a class="active" href="index.html">终端</a>
           <a href="pages/headhunting.html">寻访</a>
-          <a href="pages/operators.html">干员</a>
-          <a href="pages/events.html">活动</a>
-          <a href="pages/notes.html">笔记</a>
           <a href="https://houlinzhi.com">主站</a>
         </nav>
       </header>
@@ -38,15 +35,14 @@
       <main>
         <section class="hero-panel">
           <div class="hero-copy">
-            <p class="eyebrow">Rhodes Island / Personal Archive</p>
-            <h1>作战记录、养成路线和一点博士的私心。</h1>
+            <p class="eyebrow">Rhodes Island / Probability Lab</p>
+            <h1>把"还要多少抽"算清楚。</h1>
             <p class="hero-lead">
-              这里会整理我玩明日方舟时积累的干员偏好、活动笔记、材料计划和剧情摘录。站点是个人非官方 fan archive，优先保持清爽、可读、好维护。
+              基于明日方舟官方公示概率，逐抽计算下一位 6★期望、目标 UP 干员累计概率与多六星分布。支持标准、中坚、限定、联动等寻访体系，可建模定向选调与硬保底兜底。
             </p>
             <div class="hero-actions">
               <a class="button primary" href="pages/headhunting.html">打开寻访概率终端</a>
-              <a class="button ghost" href="pages/operators.html">查看干员档案</a>
-              <a class="button ghost" href="pages/notes.html">打开笔记库</a>
+              <a class="button ghost" href="https://houlinzhi.com">返回主站</a>
             </div>
           </div>
 
@@ -64,99 +60,79 @@
                 <span></span>
               </div>
               <div class="terminal-readout">
-                <p>Current Focus</p>
-                <strong>IS / Integrated Strategies</strong>
-                <span>notes synced: 12 / sanity stable</span>
+                <p>Probability Core</p>
+                <strong>2% Base / +2% Pity</strong>
+                <span>50 抽后递增 · 最晚 99 抽</span>
               </div>
               <div class="terminal-stats">
                 <div>
-                  <b>06</b>
-                  <span>Elite 2 Queue</span>
+                  <b>05</b>
+                  <span>寻访体系</span>
                 </div>
                 <div>
-                  <b>18</b>
-                  <span>Event Clears</span>
+                  <b>08</b>
+                  <span>规则条目</span>
                 </div>
                 <div>
-                  <b>42</b>
-                  <span>Operator Notes</span>
+                  <b>120</b>
+                  <span>联动硬保底</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="quick-grid" aria-label="快速入口">
+        <section class="quick-grid" aria-label="工具入口">
           <a class="feature-card" href="pages/headhunting.html">
             <span class="card-code">CALC-00</span>
-            <h2>寻访概率</h2>
-            <p>计算下一位 6★期望、目标 UP 概率、硬保底与多六星分布。</p>
-          </a>
-          <a class="feature-card" href="pages/operators.html">
-            <span class="card-code">OPR-01</span>
-            <h2>干员档案</h2>
-            <p>记录常用干员、练度计划、模组优先级和阵容定位。</p>
-          </a>
-          <a class="feature-card" href="pages/events.html">
-            <span class="card-code">EVT-02</span>
-            <h2>活动记录</h2>
-            <p>整理活动进度、关卡心得、奖励兑换和复刻提醒。</p>
-          </a>
-          <a class="feature-card" href="pages/notes.html">
-            <span class="card-code">LOG-03</span>
-            <h2>作战笔记</h2>
-            <p>存放肉鸽、危机合约、保全派驻和剧情阅读的碎片。</p>
+            <h2>寻访概率终端</h2>
+            <p>下一位 6★期望、目标 UP 概率、保底与多六星分布，附官方规则摘录与来源链接。</p>
           </a>
         </section>
 
         <section class="dashboard-section">
           <div class="section-heading">
-            <p class="eyebrow">Dashboard</p>
-            <h2>今日终端</h2>
+            <p class="eyebrow">Capabilities</p>
+            <h2>终端能力</h2>
           </div>
           <div class="dashboard-grid">
-            <article class="status-panel wide">
-              <div class="panel-heading">
-                <span>Priority</span>
-                <strong>近期维护清单</strong>
-              </div>
-              <ul class="task-list">
-                <li>
-                  <span class="task-state done"></span>
-                  <p>搭建 arknights.houlinzhi.com 初始站点</p>
-                </li>
-                <li>
-                  <span class="task-state done"></span>
-                  <p>整合寻访概率终端到站内导航</p>
-                </li>
-                <li>
-                  <span class="task-state active"></span>
-                  <p>补充第一批干员短评和活动档案</p>
-                </li>
-                <li>
-                  <span class="task-state"></span>
-                  <p>之后可加入材料计算表、抽卡记录和练度看板</p>
-                </li>
-              </ul>
-            </article>
-
             <article class="status-panel">
               <div class="panel-heading">
-                <span>Style</span>
-                <strong>站点基调</strong>
+                <span>Model</span>
+                <strong>精确概率模型</strong>
               </div>
               <p>
-                黑白灰的终端界面、警示黄点缀、档案式卡片和斜切线元素，尽量贴近明日方舟的工业感，但不使用官方素材。
+                逐抽计算 2% 基础概率与 50 抽后每抽 +2% 的递增机制，给出期望、分位点与首次出现概率曲线。
               </p>
             </article>
 
             <article class="status-panel">
               <div class="panel-heading">
-                <span>Deploy</span>
-                <strong>发布方式</strong>
+                <span>Banners</span>
+                <strong>多种寻访体系</strong>
               </div>
               <p>
-                纯静态文件。推送到 GitHub 后，用 GitHub Pages 从 main 分支根目录发布即可。
+                标准、中坚、限定、联动、特殊寻访各有独立计数规则，按当期公告切换即可。
+              </p>
+            </article>
+
+            <article class="status-panel">
+              <div class="panel-heading">
+                <span>Target</span>
+                <strong>目标保底建模</strong>
+              </div>
+              <p>
+                支持定向选调、300 抽兑换、120 抽硬保底等兜底机制，计算目标 UP 的真实获取概率。
+              </p>
+            </article>
+
+            <article class="status-panel">
+              <div class="panel-heading">
+                <span>Source</span>
+                <strong>基于官方公示</strong>
+              </div>
+              <p>
+                规则文档摘录鹰角官方公告关键数值与短摘句，附来源链接，可随时回原文核对。
               </p>
             </article>
           </div>
