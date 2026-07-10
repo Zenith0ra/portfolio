@@ -6,7 +6,6 @@ import {
   BookOpen,
   Boxes,
   Code2,
-  Crosshair,
   User,
   MapPin,
   Mail,
@@ -16,10 +15,10 @@ import { BentoCard } from "@/components/BentoCard";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 md:py-20">
+    <main className="mx-auto max-w-5xl px-4 py-16 md:py-20 sm:px-6">
       <BentoCard className="mb-4" delay={1}>
-        <div className="flex flex-col sm:flex-row gap-6">
-          <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-zinc-800">
+        <div className="flex flex-col gap-6 sm:flex-row">
+          <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border border-white/10">
             <Image
               src="/avatar.jpg"
               alt="Avatar"
@@ -73,7 +72,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="flex flex-col gap-2"
+            className="flex flex-row gap-2 sm:flex-col"
           >
             <a
               href="https://github.com/Zenith0ra"
@@ -104,19 +103,8 @@ export default function Home() {
         </motion.p>
       </BentoCard>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <BentoCard className="group" delay={2} href="/arknights">
-          <div className="flex items-start justify-between mb-4">
-            <div className="rounded-lg bg-orange-500/10 p-3">
-              <Crosshair className="h-6 w-6 text-orange-400" />
-            </div>
-            <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 transition-colors" />
-          </div>
-          <h3 className="text-lg font-semibold text-white">Arknights</h3>
-          <p className="mt-1 text-sm text-zinc-500">Headhunting probability tool</p>
-        </BentoCard>
-
-        <BentoCard className="group" delay={3} href="/workspace">
+      <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-3">
+        <BentoCard className="group" delay={2} href="/workspace">
           <div className="flex items-start justify-between mb-4">
             <div className="rounded-lg bg-cyan-500/10 p-3">
               <Boxes className="h-6 w-6 text-cyan-400" />
@@ -127,7 +115,7 @@ export default function Home() {
           <p className="mt-1 text-sm text-zinc-500">Tools & experiments</p>
         </BentoCard>
 
-        <BentoCard className="group" delay={4} href="/about">
+        <BentoCard className="group" delay={3} href="/about">
           <div className="flex items-start justify-between mb-4">
             <div className="rounded-lg bg-purple-500/10 p-3">
               <User className="h-6 w-6 text-purple-400" />
@@ -137,10 +125,8 @@ export default function Home() {
           <h3 className="text-lg font-semibold text-white">About</h3>
           <p className="mt-1 text-sm text-zinc-500">More about me</p>
         </BentoCard>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <BentoCard className="group" delay={5} href="https://blog.houlinzhi.com">
+        <BentoCard className="group" delay={4} href="https://blog.houlinzhi.com">
           <div className="flex items-start justify-between mb-4">
             <div className="rounded-lg bg-purple-500/10 p-3">
               <BookOpen className="h-6 w-6 text-purple-400" />
@@ -150,8 +136,10 @@ export default function Home() {
           <h3 className="text-lg font-semibold text-white">Blog</h3>
           <p className="mt-1 text-sm text-zinc-500">Thoughts, tutorials & notes</p>
         </BentoCard>
+      </div>
 
-        <BentoCard className="group" delay={6} href="https://github.com/Zenith0ra">
+      <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 sm:mx-auto sm:max-w-2xl">
+        <BentoCard className="group" delay={5} href="https://github.com/Zenith0ra">
           <div className="flex items-start justify-between mb-4">
             <div className="rounded-lg bg-cyan-500/10 p-3">
               <Code2 className="h-6 w-6 text-cyan-400" />
@@ -162,7 +150,7 @@ export default function Home() {
           <p className="mt-1 text-sm text-zinc-500">Open source projects</p>
         </BentoCard>
 
-        <BentoCard delay={7}>
+        <BentoCard delay={6}>
           <div className="flex h-full flex-col justify-center">
             <p className="font-mono text-sm text-zinc-500">
               <span className="text-purple-400">&quot;</span>

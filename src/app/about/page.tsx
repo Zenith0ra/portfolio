@@ -131,7 +131,7 @@ const contacts = [
     href: "mailto:houlinzhi23411082@gmail.com",
     icon: Mail,
   },
-  { label: "WeChat", value: "houlinzhi23411082", href: null, icon: MessageCircle },
+  { label: "WeChat", value: "Zenith0ra", href: null, icon: MessageCircle },
   { label: "QQ", value: "3098714681", href: null, icon: Hash },
 ];
 

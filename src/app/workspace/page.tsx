@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Boxes,
+  Crosshair,
   FileJson,
   Palette,
   Clock,
@@ -27,6 +28,14 @@ interface Tool {
 }
 
 const tools: Tool[] = [
+  {
+    title: "Arknights",
+    description: "Headhunting probability calculator",
+    icon: Crosshair,
+    href: "/arknights",
+    color: "orange",
+    keywords: ["arknights", "probability", "headhunting", "寻访", "概率", "明日方舟"],
+  },
   {
     title: "Diagram",
     description: "Flowcharts & sequence diagrams",
