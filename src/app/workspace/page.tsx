@@ -3,14 +3,21 @@
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
+  Binary,
   Boxes,
+  Braces,
   Crosshair,
   FileJson,
+  FileText,
+  Fingerprint,
+  GitBranch,
+  Hash,
+  KeyRound,
+  Link,
   Palette,
   Clock,
   QrCode,
-  Hash,
-  GitBranch,
+  Timer,
 } from "lucide-react";
 import { BentoCard } from "@/components/BentoCard";
 import { LucideIcon } from "lucide-react";
@@ -60,6 +67,38 @@ const categories: { label: string; tools: Tool[] }[] = [
         color: "purple",
         tags: ["MD5", "SHA-256", "Web Crypto"],
       },
+      {
+        title: "Base64",
+        description: "Encode & decode Base64",
+        icon: Binary,
+        href: "/workspace/base64",
+        color: "cyan",
+        tags: ["Encode", "Decode"],
+      },
+      {
+        title: "UUID",
+        description: "Generate UUID v4",
+        icon: Fingerprint,
+        href: "/workspace/uuid",
+        color: "purple",
+        tags: ["UUID", "Crypto"],
+      },
+      {
+        title: "Timestamp",
+        description: "Unix timestamp converter",
+        icon: Timer,
+        href: "/workspace/timestamp",
+        color: "cyan",
+        tags: ["Unix", "Date"],
+      },
+      {
+        title: "Regex",
+        description: "Test regular expressions",
+        icon: Braces,
+        href: "/workspace/regex",
+        color: "purple",
+        tags: ["RegExp", "Highlight"],
+      },
     ],
   },
   {
@@ -80,6 +119,30 @@ const categories: { label: string; tools: Tool[] }[] = [
         href: "/workspace/qr-generator",
         color: "cyan",
         tags: ["Canvas", "PNG"],
+      },
+      {
+        title: "Password",
+        description: "Strong password generator",
+        icon: KeyRound,
+        href: "/workspace/password",
+        color: "orange",
+        tags: ["Random", "Crypto"],
+      },
+      {
+        title: "URL Encode",
+        description: "URL encode & decode",
+        icon: Link,
+        href: "/workspace/url-encode",
+        color: "cyan",
+        tags: ["URI", "Component"],
+      },
+      {
+        title: "Text Stats",
+        description: "Count words & characters",
+        icon: FileText,
+        href: "/workspace/text-stats",
+        color: "purple",
+        tags: ["Count", "Analyze"],
       },
     ],
   },
@@ -106,6 +169,7 @@ const techStack = [
   "Mermaid",
   "Web Crypto",
   "Canvas",
+  "RegExp",
 ];
 
 const colorMap = {
@@ -145,7 +209,7 @@ export default function WorkspacePage() {
                 Workspace
               </h1>
               <p className="text-sm text-zinc-500">
-                7 tools across 3 categories
+                14 tools across 3 categories
               </p>
             </div>
           </div>
