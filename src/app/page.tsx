@@ -48,9 +48,21 @@ const timeline = [
       "Focusing on OS, Computer Networks, Databases, and AI courses.",
     icon: Code,
   },
+  {
+    year: "2026",
+    title: "Senior Year",
+    description:
+      "Upcoming senior year, preparing for graduation and research.",
+    icon: GraduationCap,
+  },
 ];
 
 const awards = [
+  {
+    name: "志愿公益优秀奖学金",
+    year: "2025",
+    org: "Tsinghua University",
+  },
   {
     name: "志愿公益优秀奖学金",
     year: "2024",
@@ -92,7 +104,7 @@ const projects = [
   {
     name: "Personal Website",
     tech: "houlinzhi.com",
-    description: "个人主页，含工具集与明日方舟寻访概率终端。",
+    description: "个人网站与在线工具集。",
     year: "2025",
   },
   {
@@ -162,7 +174,7 @@ export default function Home() {
                 Linzhi Hou · 侯林之
               </h1>
               <p className="mt-1 text-zinc-400">
-                CS Student @ Tsinghua University
+                Senior CS Student @ Tsinghua University
               </p>
               <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
                 <span className="flex items-center gap-1">
