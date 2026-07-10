@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="明日方舟干员档案、练度优先级和个人短评。" />
+    <title>干员档案 | Arknights Terminal</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header" data-elevated="false">
+        <a class="brand" href="../index.html" aria-label="返回首页">
+          <span class="brand-mark" aria-hidden="true">AK</span>
+          <span>
+            <strong>Arknights Terminal</strong>
+            <small>operator files</small>
+          </span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav" id="site-nav" aria-label="主导航">
+          <a href="../index.html">终端</a>
+          <a href="headhunting.html">寻访</a>
+          <a class="active" href="operators.html">干员</a>
+          <a href="events.html">活动</a>
+          <a href="notes.html">笔记</a>
+          <a href="https://houlinzhi.com">主站</a>
+        </nav>
+      </header>
+
+      <main class="content-page">
+        <section class="page-hero compact">
+          <p class="eyebrow">Operator Archive</p>
+          <h1>干员档案</h1>
+          <p>
+            这里适合放常用干员、练度计划、技能专精、模组优先级，以及每位干员在你阵容里的定位。
+          </p>
+        </section>
+
+        <section class="filter-bar" aria-label="干员筛选">
+          <button class="chip active" type="button" data-filter="all">全部</button>
+          <button class="chip" type="button" data-filter="core">核心</button>
+          <button class="chip" type="button" data-filter="raise">待培养</button>
+          <button class="chip" type="button" data-filter="note">待记录</button>
+        </section>
+
+        <section class="operator-grid" aria-label="干员列表">
+          <article class="operator-card" data-tags="core note">
+            <div class="operator-avatar">AM</div>
+            <div>
+              <span class="operator-class">Caster / Core</span>
+              <h2>阿米娅</h2>
+              <p>剧情核心与法伤补位。建议记录不同形态的使用场景。</p>
+            </div>
+            <div class="operator-meta">
+              <span>E2</span>
+              <span>Skill: S3</span>
+            </div>
+          </article>
+
+          <article class="operator-card" data-tags="core">
+            <div class="operator-avatar">TH</div>
+            <div>
+              <span class="operator-class">Guard / Boss Killer</span>
+              <h2>史尔特尔</h2>
+              <p>高压关卡的决战按钮，适合补充轴线和撤退时机。</p>
+            </div>
+            <div class="operator-meta">
+              <span>E2</span>
+              <span>Skill: S3M3</span>
+            </div>
+          </article>
+
+          <article class="operator-card" data-tags="raise">
+            <div class="operator-avatar">MY</div>
+            <div>
+              <span class="operator-class">Medic / Support</span>
+              <h2>夜莺</h2>
+              <p>法伤环境的防线核心。可记录需要鸟笼吸引火力的地图。</p>
+            </div>
+            <div class="operator-meta">
+              <span>E2</span>
+              <span>Module?</span>
+            </div>
+          </article>
+
+          <article class="operator-card" data-tags="note raise">
+            <div class="operator-avatar">LN</div>
+            <div>
+              <span class="operator-class">Specialist / Control</span>
+              <h2>令</h2>
+              <p>单人作战和信赖队常用。适合单独做一页召唤物笔记。</p>
+            </div>
+            <div class="operator-meta">
+              <span>Plan</span>
+              <span>S3</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="note-panel">
+          <h2>怎么继续添加干员？</h2>
+          <p>
+            复制一个 <code>operator-card</code>，修改缩写、职业、名字、短评和 <code>data-tags</code> 即可。以后如果内容变多，可以把每个干员拆成单独页面。
+          </p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Arknights Terminal by Hou Linzhi. 非官方个人站点，与 Hypergryph / Yostar 无隶属关系。</p>
+      </footer>
+    </div>
+
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>

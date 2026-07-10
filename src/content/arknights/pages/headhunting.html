@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="明日方舟寻访概率终端：计算下一位 6★期望、目标干员概率、保底与多六星分布。"
+    />
+    <title>寻访概率 | Arknights Terminal</title>
+    <link rel="stylesheet" href="../assets/css/headhunting.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-panel" aria-label="寻访概率终端导航">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span>
+          </div>
+          <div>
+            <p class="eyebrow">RHODES ISLAND</p>
+            <h1>寻访概率终端</h1>
+          </div>
+        </div>
+
+        <nav class="nav-tabs" aria-label="功能分区">
+          <button class="nav-tab active" data-tab="next-six" type="button">
+            <span class="tab-icon">6</span>
+            下一位 6★
+          </button>
+          <button class="nav-tab" data-tab="target" type="button">
+            <span class="tab-icon">T</span>
+            目标干员
+          </button>
+          <button class="nav-tab" data-tab="multi" type="button">
+            <span class="tab-icon">Σ</span>
+            多六星分布
+          </button>
+          <button class="nav-tab" data-tab="rules" type="button">
+            <span class="tab-icon">?</span>
+            规则文档
+          </button>
+        </nav>
+
+        <div class="status-tile">
+          <p>当前模型</p>
+          <strong>2% 基础概率</strong>
+          <span>50 抽后每抽 +2%，最高 100%</span>
+        </div>
+
+        <nav class="site-links" aria-label="站内导航">
+          <a href="../index.html">终端首页</a>
+          <a href="operators.html">干员档案</a>
+          <a href="events.html">活动记录</a>
+          <a href="notes.html">作战笔记</a>
+        </nav>
+
+        <button class="ghost-button" id="openNotice" type="button">查看首次公告</button>
+      </aside>
+
+      <main class="workspace">
+        <section class="hero-band">
+          <div>
+            <p class="eyebrow">HEADHUNTING ANALYTICS</p>
+            <h2>把“还要多少抽”算清楚</h2>
+            <p>
+              支持标准、中坚、限定、联动、回归等寻访规则的概率估算；可计算下一位 6★期望、指定抽数内出货概率、目标 UP 干员概率与多六星分布。
+            </p>
+          </div>
+          <div class="signal-board" aria-label="概率核心参数">
+            <span>BASE 02.00%</span>
+            <span>PITY +02.00%</span>
+            <span>MAX 100%</span>
+          </div>
+        </section>
+
+        <section class="quick-questions" aria-label="快捷问题">
+          <button data-preset="next" type="button">我下一位 6★期望几抽？</button>
+          <button data-preset="hundred" type="button">100 抽至少 1 个 6★？</button>
+          <button data-preset="limited" type="button">限定池 300 抽目标概率？</button>
+          <button data-preset="collab" type="button">联动 120 抽保底怎么算？</button>
+        </section>
+
+        <section class="control-strip" aria-label="通用参数">
+          <label>
+            <span>寻访体系</span>
+            <select id="bannerType">
+              <option value="standard">标准 / 限时标准：继承标准 6★概率</option>
+              <option value="kernel">中坚：独立继承中坚 6★概率</option>
+              <option value="limited">限定：当期独立计数，结束清零</option>
+              <option value="collab">联动：当期独立计数，结束清零</option>
+              <option value="special">跨年 / 新年 / 归航：按当期特殊规则</option>
+            </select>
+          </label>
+          <label>
+            <span>已连续未出 6★</span>
+            <input id="currentPity" type="number" min="0" max="98" value="0" />
+          </label>
+          <label>
+            <span>计划寻访次数</span>
+            <input id="plannedPulls" type="number" min="1" max="600" value="100" />
+          </label>
+        </section>
+        <p class="rule-hint" id="bannerRuleNote"></p>
+
+        <section class="tab-panel active" id="next-six">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">NEXT 6★</p>
+              <h3>下一位 6★干员</h3>
+            </div>
+            <p>基于当前未出 6★次数，精确计算下一位 6★的期望、分位点与指定抽数内概率。</p>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>期望还需</span>
+              <strong id="expectedNextSix">--</strong>
+              <small>抽获得下一位 6★</small>
+            </article>
+            <article class="metric-card">
+              <span>指定抽数内</span>
+              <strong id="chanceNextSix">--</strong>
+              <small>至少获得 1 位 6★</small>
+            </article>
+            <article class="metric-card">
+              <span>必定不晚于</span>
+              <strong id="guaranteedNextSix">--</strong>
+              <small>抽触发 6★</small>
+            </article>
+            <article class="metric-card">
+              <span>90% 分位</span>
+              <strong id="p90NextSix">--</strong>
+              <small>90% 情况会在此之前</small>
+            </article>
+          </div>
+
+          <div class="analysis-layout">
+            <article class="chart-panel">
+              <div class="panel-title">
+                <h4>首次出现概率曲线</h4>
+                <span>每一列表示“正好第 N 抽出 6★”</span>
+              </div>
+              <div class="bar-chart" id="nextSixChart" aria-label="下一位六星概率柱状图"></div>
+            </article>
+            <article class="table-panel">
+              <div class="panel-title">
+                <h4>关键节点</h4>
+                <span>累计概率</span>
+              </div>
+              <div class="data-table" id="nextSixTable"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="target">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">TARGET OPERATOR</p>
+              <h3>目标干员概率</h3>
+            </div>
+            <p>把“出 6★后是否为目标”作为条件概率建模，并可计入定向选调、联动保底、限定兑换等目标兜底。</p>
+          </div>
+
+          <div class="target-controls">
+            <label>
+              <span>目标类型</span>
+              <select id="targetPreset">
+                <option value="any">任意 6★（目标占比 100%）</option>
+                <option value="eventSingle">限时标准单 UP 6★（50%，150 抽定向选调）</option>
+                <option value="standardEither">常驻 / 中坚双 UP 任一 6★（50%，150 抽选调）</option>
+                <option value="standardOne">常驻 / 中坚双 UP 指定一名（25%）</option>
+                <option value="jointOne">联合行动指定一名（25%）</option>
+                <option value="directSelectOne">定向甄选 / 归航指定一名（约 33.33%）</option>
+                <option value="limitedOne">限定池指定当期 6★（35%）</option>
+                <option value="limitedEither">限定池任一当期 UP 6★（70%，300 抽兑换）</option>
+                <option value="collabSix">联动 6★（默认 50%，120 抽硬保底）</option>
+                <option value="custom">自定义目标占比</option>
+              </select>
+            </label>
+            <label>
+              <span>目标占 6★比例</span>
+              <input id="targetShare" type="number" min="0" max="100" step="0.1" value="50" />
+            </label>
+            <label>
+              <span>本池已抽次数</span>
+              <input id="bannerPullsDone" type="number" min="0" max="600" value="0" />
+            </label>
+            <label class="check-row">
+              <input id="useHardCap" type="checkbox" />
+              <span>计入硬保底 / 兑换直接兜底</span>
+            </label>
+            <label>
+              <span>总上限抽数</span>
+              <input id="hardCapPulls" type="number" min="1" max="600" value="300" />
+            </label>
+            <label class="check-row">
+              <input id="useDirectional" type="checkbox" />
+              <span>计入目标保底：触发后下一位 6★必为目标</span>
+            </label>
+            <label>
+              <span>目标保底触发抽数</span>
+              <input id="directionalPulls" type="number" min="1" max="600" value="150" />
+            </label>
+            <label>
+              <span>已累计未获目标抽数</span>
+              <input id="noTargetPulls" type="number" min="0" max="600" value="0" />
+            </label>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>期望还需</span>
+              <strong id="expectedTarget">--</strong>
+              <small>抽获得目标</small>
+            </article>
+            <article class="metric-card">
+              <span>指定抽数内</span>
+              <strong id="chanceTarget">--</strong>
+              <small>获得目标概率</small>
+            </article>
+            <article class="metric-card">
+              <span>50% 分位</span>
+              <strong id="p50Target">--</strong>
+              <small>一半情况会在此之前</small>
+            </article>
+            <article class="metric-card">
+              <span>90% 分位</span>
+              <strong id="p90Target">--</strong>
+              <small>高把握抽数参考</small>
+            </article>
+          </div>
+
+          <div class="analysis-layout">
+            <article class="chart-panel">
+              <div class="panel-title">
+                <h4>目标累计概率</h4>
+                <span>含当前设置的保底与目标占比</span>
+              </div>
+              <div class="cdf-chart" id="targetCdfChart" aria-label="目标干员累计概率图"></div>
+            </article>
+            <article class="table-panel">
+              <div class="panel-title">
+                <h4>推荐抽数</h4>
+                <span>目标累计概率</span>
+              </div>
+              <div class="data-table" id="targetTable"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="multi">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">DISTRIBUTION</p>
+              <h3>多枚 6★分布</h3>
+            </div>
+            <p>计算计划抽数内获得 0、1、2、3 枚及更多 6★的概率，同时给出 6★数量期望。</p>
+          </div>
+
+          <div class="metric-grid compact">
+            <article class="metric-card">
+              <span>6★数量期望</span>
+              <strong id="expectedSixCount">--</strong>
+              <small>计划抽数内平均值</small>
+            </article>
+            <article class="metric-card">
+              <span>至少 2 位</span>
+              <strong id="chanceAtLeastTwo">--</strong>
+              <small>多出货概率</small>
+            </article>
+            <article class="metric-card">
+              <span>没有 6★</span>
+              <strong id="chanceZeroSix">--</strong>
+              <small>吃满沉默概率</small>
+            </article>
+          </div>
+
+          <article class="chart-panel wide">
+            <div class="panel-title">
+              <h4>6★数量分布</h4>
+              <span id="multiSubtitle">--</span>
+            </div>
+            <div class="count-chart" id="countChart" aria-label="六星数量分布图"></div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="rules">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">OFFICIAL NOTES</p>
+              <h3>官方规则摘录</h3>
+            </div>
+            <p>这里只放官网公告中的机制名称、关键数值和短摘句；完整规则请打开来源链接核对。</p>
+          </div>
+
+          <div class="rules-document">
+            <article>
+              <h4>基础概率</h4>
+              <p>官方概率公示给出的 6★基础出现概率为 2.00%，5★为 8.00%，4★为 50.00%，3★为 40.00%。本页的下一位 6★、多枚 6★分布均基于这组基础概率。</p>
+              <p class="official-line">官方短摘：<q>连续50次没有获得6星干员</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/201904370.html" target="_blank" rel="noreferrer">概率公示</a>
+            </article>
+            <article>
+              <h4>概率提升</h4>
+              <p>50 次未获得 6★后，下次 6★概率按 2 个百分点递增；获得 6★后回到 2%。因此从 0 垫开始，最晚第 99 抽获得 6★。</p>
+              <p class="official-line">官方短摘：<q>下一次获得6星干员的概率将恢复到2%</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/201904370.html" target="_blank" rel="noreferrer">概率公示</a>
+            </article>
+            <article>
+              <h4>标准 / 中坚</h4>
+              <p>标准寻访与中坚寻访分别维护 6★概率累计。中坚相关获取适用中坚信物、通用凭证等规则，这些凭证收益不纳入本页计算。</p>
+              <p class="official-line">官方短摘：<q>【中坚寻访】和【标准寻访】将相互独立</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/2023033352" target="_blank" rel="noreferrer">中坚寻访说明</a>
+            </article>
+            <article>
+              <h4>限时标准</h4>
+              <p>限时标准单 UP 6★可按 50% 目标占比计算，并可勾选目标保底，触发抽数填 150。</p>
+              <p class="official-line">官方短摘：<q>定向选调</q> / <q>在当期寻访中仅生效一次</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/2023033352" target="_blank" rel="noreferrer">定向选调公告</a>
+            </article>
+            <article>
+              <h4>常驻选调</h4>
+              <p>常驻标准与常驻中坚有双 UP 6★选调。150 次适合建模“任一 UP 6★”；要精确到指定某一名，300 次后的另一名选调需按当期状态判断。</p>
+              <p class="official-line">官方短摘：<q>累计寻访150次后</q> / <q>累计寻访300次后</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/3064.html" target="_blank" rel="noreferrer">标准 / 中坚选调公告</a>
+            </article>
+            <article>
+              <h4>限定寻访</h4>
+              <p>限定当期双 UP 合计通常按 70% 目标占比；指定其中一位通常按 35%。若可通过寻访数据契约获取目标，可勾选硬上限并填 300。</p>
+              <p class="official-line">官方短摘：<q>寻访300次时</q> / <q>占6★出率的70%</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/2825" target="_blank" rel="noreferrer">限定寻访公告</a>
+            </article>
+            <article>
+              <h4>联动寻访</h4>
+              <p>联动类寻访不统一套用一个名称，需看当期公告。如果公告写明 120 次必得联动 6★，可勾选硬上限并填 120。</p>
+              <p class="official-line">官方短摘：<q>前120次寻访</q> / <q>仅限一次</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/4964" target="_blank" rel="noreferrer">联动寻访公告</a>
+            </article>
+            <article>
+              <h4>特殊寻访</h4>
+              <p>跨年欢庆、新年特别十连、归航和新人特惠都有额外机制。本页只做局部概率辅助，不能替代当期官方规则原文。</p>
+              <p class="official-line">官方短摘：<q>首次获得的6星干员</q> / <q>10次寻访内必定获得6星干员</q></p>
+              <a class="source-link" href="https://ak.hypergryph.com/news/4946" target="_blank" rel="noreferrer">跨年欢庆公告</a>
+              <a class="source-link" href="https://ak.hypergryph.com/news/2837" target="_blank" rel="noreferrer">新年十连公告</a>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="notice-modal" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <div class="notice-window">
+        <div class="notice-header">
+          <div>
+            <p class="eyebrow">FIRST BOOT DOCUMENT</p>
+            <h2 id="noticeTitle">寻访概率终端公告</h2>
+          </div>
+          <button class="icon-button" id="closeNotice" type="button" aria-label="关闭公告">×</button>
+        </div>
+        <div class="notice-content">
+          <h3>用途</h3>
+          <p>本应用用于辅助理解《明日方舟》各类寻访的概率问题：下一位 6★预计还要几抽、已经垫了若干抽时的概率变化、指定抽数内至少获得一位 6★的概率、目标 UP 干员的累计概率，以及计划抽数内可能获得多少位 6★。</p>
+
+          <h3>首次使用步骤</h3>
+          <p>先选择寻访体系，再填写“已连续未出 6★”和“计划寻访次数”。如果只关心任意 6★，查看“下一位 6★”即可；如果关心某位 UP 或限定干员，进入“目标干员”设置目标占比、硬保底或兑换上限。</p>
+
+          <h3>重要说明</h3>
+          <p>页面使用官网公告中的机制名称、关键数值和短摘句整理，用于计算和理解概率，不替代游戏内官方寻访规则原文。限定、联动、跨年、回归等特殊池常有独立计数或额外机制，使用时请确认当期公告。</p>
+
+          <h3>模型边界</h3>
+          <p>应用会精确计算通用 6★概率提升机制；目标干员部分会把“出 6★后是目标的比例”作为参数处理，并支持目标保底与 120 / 300 等硬上限。常驻 / 中坚双 UP 指定某一名、新年十连定制列表等更细的规则，仍需要按当期公告单独判断。</p>
+        </div>
+        <div class="notice-actions">
+          <label class="check-row">
+            <input id="dontShowNotice" type="checkbox" checked />
+            <span>下次打开不自动显示</span>
+          </label>
+          <button class="primary-button" id="acceptNotice" type="button">进入终端</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/js/headhunting.js"></script>
+  </body>
+</html>
