@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowUpRight,
   GraduationCap,
   Award,
@@ -21,6 +20,7 @@ import {
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
 import { BentoCard } from "@/components/BentoCard";
+import { PageNav } from "@/components/PageNav";
 
 const timeline = [
   {
@@ -84,20 +84,7 @@ export default function AboutPage() {
 
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
-        {/* Back button */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Link
-            href="/"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-        </motion.div>
+        <PageNav />
 
         {/* Header */}
         <motion.div

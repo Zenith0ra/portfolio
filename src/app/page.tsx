@@ -174,14 +174,11 @@ export default function Home() {
                 <Crosshair className="h-6 w-6 text-orange-400" />
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-medium text-orange-300">
-                  New
-                </span>
                 <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
             </div>
             <h3 className="text-lg font-semibold text-white">Arknights</h3>
-            <p className="mt-1 text-sm text-zinc-500">Operator notes & field archive</p>
+            <p className="mt-1 text-sm text-zinc-500">Headhunting probability tool</p>
           </BentoCard>
 
           {/* Workspace */}
@@ -196,9 +193,6 @@ export default function Home() {
                 <Boxes className="h-6 w-6 text-cyan-400" />
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400">
-                  New
-                </span>
                 <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
             </div>

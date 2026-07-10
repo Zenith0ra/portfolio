@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
+import { PageNav } from "@/components/PageNav";
 import mermaid from "mermaid";
 
 const templates = {
@@ -133,9 +134,9 @@ export default function DiagramPage() {
       themeVariables: {
         darkMode: true,
         background: "#18181b",
-        primaryColor: "#6366f1",
+        primaryColor: "#a855f7",
         primaryTextColor: "#fff",
-        primaryBorderColor: "#4f46e5",
+        primaryBorderColor: "#9333ea",
         lineColor: "#71717a",
         secondaryColor: "#27272a",
         tertiaryColor: "#3f3f46",
@@ -260,10 +261,11 @@ export default function DiagramPage() {
   return (
     <div className="relative min-h-screen overflow-hidden noise-overlay">
       <div className="fixed inset-0 bg-grid-pattern" />
-      <GlowingOrb color="rgba(99, 102, 241, 0.12)" size={500} top="-100px" right="-100px" delay={0.2} />
+      <GlowingOrb color="rgba(168, 85, 247, 0.12)" size={500} top="-100px" right="-100px" delay={0.2} />
       <GlowingOrb color="rgba(168, 85, 247, 0.08)" size={400} bottom="10%" left="-100px" delay={0.4} />
 
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-12 md:py-16">
+        <PageNav />
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
           <Link href="/workspace" className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white">
             <ArrowLeft className="h-4 w-4" />
@@ -274,8 +276,8 @@ export default function DiagramPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-indigo-500/10 p-3">
-                <GitBranch className="h-7 w-7 text-indigo-400" />
+              <div className="rounded-xl bg-purple-500/10 p-3">
+                <GitBranch className="h-7 w-7 text-purple-400" />
               </div>
               <div>
                 <h1 className="gradient-text text-2xl font-bold tracking-tight">Diagram Editor</h1>
@@ -322,7 +324,7 @@ export default function DiagramPage() {
               <button
                 onClick={downloadSVG}
                 disabled={!svgContent}
-                className="flex items-center gap-2 rounded-lg bg-indigo-500/20 px-3 py-2 text-sm text-indigo-400 hover:bg-indigo-500/30 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-purple-500/20 px-3 py-2 text-sm text-purple-400 hover:bg-purple-500/30 transition-all disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 SVG
@@ -366,7 +368,7 @@ export default function DiagramPage() {
                 href="https://mermaid.js.org/syntax/flowchart.html"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-zinc-500 hover:text-indigo-400 transition-colors"
+                className="text-xs text-zinc-500 hover:text-purple-400 transition-colors"
               >
                 语法文档 ↗
               </a>
@@ -375,7 +377,7 @@ export default function DiagramPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="输入 Mermaid 代码..."
-              className="flex-1 min-h-[400px] w-full resize-none rounded-xl bg-zinc-900/80 border border-white/10 p-4 font-mono text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-colors"
+              className="flex-1 min-h-[400px] w-full resize-none rounded-xl bg-zinc-900/80 border border-white/10 p-4 font-mono text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50 transition-colors"
               spellCheck={false}
             />
           </div>
@@ -406,10 +408,10 @@ export default function DiagramPage() {
         >
           <h3 className="text-sm font-medium text-zinc-400 mb-2">快速提示</h3>
           <div className="grid gap-2 text-xs text-zinc-500 sm:grid-cols-2 lg:grid-cols-4">
-            <div><code className="text-indigo-400">flowchart TD</code> 自上而下流程图</div>
-            <div><code className="text-indigo-400">flowchart LR</code> 从左到右流程图</div>
-            <div><code className="text-indigo-400">A --&gt; B</code> 连接节点</div>
-            <div><code className="text-indigo-400">A{`{判断}`}</code> 菱形判断框</div>
+            <div><code className="text-purple-400">flowchart TD</code> 自上而下流程图</div>
+            <div><code className="text-purple-400">flowchart LR</code> 从左到右流程图</div>
+            <div><code className="text-purple-400">A --&gt; B</code> 连接节点</div>
+            <div><code className="text-purple-400">A{`{判断}`}</code> 菱形判断框</div>
           </div>
         </motion.div>
 

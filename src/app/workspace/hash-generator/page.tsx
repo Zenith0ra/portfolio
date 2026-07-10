@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Hash, Copy, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
+import { PageNav } from "@/components/PageNav";
 
 // Hash functions using Web Crypto API
 async function generateHash(text: string, algorithm: string): Promise<string> {
@@ -225,6 +226,7 @@ export default function HashGeneratorPage() {
             <GlowingOrb color="rgba(0, 212, 255, 0.08)" size={400} bottom="10%" left="-100px" delay={0.4} />
 
             <main className="relative z-10 mx-auto max-w-2xl px-6 py-16 md:py-20">
+                <PageNav />
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
                     <Link href="/workspace" className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white">
                         <ArrowLeft className="h-4 w-4" />

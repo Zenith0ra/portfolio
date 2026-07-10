@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -41,18 +42,24 @@ export function BentoCard({
     );
 
     if (href) {
+        if (href.startsWith("http")) {
+            return (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full"
+                >
+                    {content}
+                </a>
+            );
+        }
         return (
-            <a
-                href={href}
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="block h-full"
-            >
+            <Link href={href} className="block h-full">
                 {content}
-            </a>
+            </Link>
         );
     }
 
     return content;
 }
-
