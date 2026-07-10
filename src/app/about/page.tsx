@@ -18,34 +18,51 @@ import {
   Globe,
   FolderGit2,
   HandHeart,
+  MessageCircle,
+  Hash,
 } from "lucide-react";
 import { BentoCard } from "@/components/BentoCard";
 
 const timeline = [
   {
-    year: "2023",
+    year: "2023.9",
     title: "Entered Tsinghua University",
-    description: "Started CS journey, became class organizer",
+    description:
+      "Started CS journey. Became class organizer (组织委员) for Class 33.",
     icon: GraduationCap,
   },
   {
-    year: "2024",
-    title: "Class Monitor",
-    description: "Led Class 33 to Outstanding League Branch honor",
+    year: "2024.9",
+    title: "Class Monitor (班长)",
+    description:
+      "Responsible for daily management, activity coordination, and class cohesion. Led Class 33 to Outstanding League Branch (甲级团支部) honor.",
     icon: Users,
   },
   {
     year: "2025",
     title: "Junior Year",
-    description: "Focusing on OS, Networks, and AI courses",
+    description:
+      "Focusing on OS, Computer Networks, Databases, and AI courses.",
     icon: Code,
   },
 ];
 
 const awards = [
-  { name: "Volunteer Service Scholarship", year: "2024", org: "Tsinghua" },
-  { name: "Freshman Excellence Scholarship", year: "2023", org: "Tsinghua" },
-  { name: "Provincial Merit Student", year: "2023", org: "Henan" },
+  {
+    name: "志愿公益优秀奖学金",
+    year: "2024",
+    org: "Tsinghua University",
+  },
+  {
+    name: "新生优秀奖学金",
+    year: "2023",
+    org: "Tsinghua University",
+  },
+  {
+    name: "河南省三好学生",
+    year: "2023",
+    org: "Henan Province",
+  },
 ];
 
 const interests = [
@@ -58,40 +75,73 @@ const interests = [
 const skills = {
   languages: ["C/C++", "Python", "Rust", "TypeScript", "HTML/CSS"],
   frameworks: ["React", "Next.js", "Django", "Node.js"],
-  tools: ["Git", "Docker", "Linux", "VS Code"],
+  tools: ["Git", "VS Code", "Linux", "WSL", "Docker"],
+  domains: ["Algorithm Design", "AI", "Web Development"],
 };
 
 const projects = [
   {
-    name: "Personal Website",
-    tech: "Next.js + Tailwind",
+    name: "Personal Tech Blog",
+    tech: "Jekyll + Chirpy + GitHub Pages",
     description:
-      "Portfolio with Arknights probability tool, workspace utilities, and blog integration",
-    year: "2025",
-  },
-  {
-    name: "Tech Blog",
-    tech: "Jekyll + Chirpy",
-    description:
-      "32 posts on computer graphics, AI, and algorithms with PWA and search",
+      "使用Jekyll静态网站生成器搭建个人技术博客，采用Chirpy主题并进行深度定制。集成了评论系统、搜索功能、PWA支持等特性。32篇技术文章涵盖计算机图形学、人工智能、算法等领域。网站具备响应式设计，支持深色/浅色主题切换。",
     year: "2024",
   },
   {
-    name: "Algorithm Practice",
-    tech: "C++ / Python",
+    name: "Personal Website",
+    tech: "Next.js + Tailwind CSS + Vercel",
     description:
-      "Continuous practice on LeetCode covering DP, graph theory, and sorting",
+      "Built portfolio with Arknights headhunting probability calculator (4-tab tool with official rules), 6 workspace developer tools, and unified Chirpy-inspired design system.",
+    year: "2025",
+  },
+  {
+    name: "Algorithm Practice",
+    tech: "C++ / Python | LeetCode",
+    description:
+      "持续学习和实践经典算法与数据结构，在LeetCode等平台上解决编程问题。涵盖排序算法、搜索算法、动态规划、图论等主题，不断提升算法思维和编程能力。",
     year: "2023 - present",
+  },
+  {
+    name: "Open Source Contributions",
+    tech: "GitHub",
+    description:
+      "积极参与开源社区，通过GitHub贡献代码和文档。学习协作开发流程，提升代码质量意识，培养团队合作精神和技术交流能力。",
+    year: "2024 - present",
   },
 ];
 
 const volunteer = [
-  { name: "Alumni Homecoming Service", date: "2025-05" },
-  { name: "Campus Tour Guide", date: "2025-05" },
-  { name: "Embrace Alma Mater (Round 23)", date: "2025-03" },
-  { name: "College Entrance Recruitment", date: "2024-09" },
-  { name: "Ma Yuehan Cup Athletics", date: "2024-05" },
-  { name: "Embrace Alma Mater (Round 22)", date: "2024-03" },
+  { name: "2025校友返校日志愿服务", date: "2025-05" },
+  { name: "计算机系第21届钟士模杯田径运动会", date: "2025-05" },
+  { name: "2024-2025春季学期日常讲解活动", date: "2025-05" },
+  { name: "清华大学第23届情系母校志愿活动", date: "2025-03" },
+  { name: "第十期清年爱劳动", date: "2025-03" },
+  { name: "2024秋季学期Program Buddy活动", date: "2025-02" },
+  { name: "2024秋季学期Inspire启志书信活动", date: "2025-02" },
+  { name: "计算机系校庆校友纪念活动现场服务", date: "2025-01" },
+  { name: "2024年高考招生志愿者", date: "2024-09" },
+  { name: "清华大学2024年马约翰杯田径运动会", date: "2024-05" },
+  { name: "计算机系2024钟士模杯运动会", date: "2024-04" },
+  { name: "清华大学第22届情系母校志愿活动", date: "2024-03" },
+  { name: "清年爱劳动", date: "2024-01" },
+  { name: "计算机系2023年迎新", date: "2023-09" },
+];
+
+const contacts = [
+  {
+    label: "Academic",
+    value: "hlz23@mails.tsinghua.edu.cn",
+    href: "mailto:hlz23@mails.tsinghua.edu.cn",
+    icon: Mail,
+  },
+  {
+    label: "Personal",
+    value: "houlinzhi23411082@gmail.com",
+    href: "mailto:houlinzhi23411082@gmail.com",
+    icon: Mail,
+  },
+  { label: "WeChat", value: "houlinzhi23411082", href: null, icon: MessageCircle },
+  { label: "QQ", value: "3098714681", href: null, icon: Hash },
 ];
 
 export default function AboutPage() {
@@ -110,26 +160,65 @@ export default function AboutPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white">
-                Linzhi Hou
+                Linzhi Hou · 侯林之
               </h1>
-              <p className="mt-1 text-zinc-400">侯林之</p>
+              <p className="mt-1 text-zinc-400">
+                CS Student @ Tsinghua University
+              </p>
               <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5" />
                   Beijing, China
                 </span>
                 <span className="flex items-center gap-1">
-                  <Mail className="h-3.5 w-3.5" />
-                  hlz23@mails.tsinghua.edu.cn
+                  <Calendar className="h-3.5 w-3.5" />
+                  Class of 2023
                 </span>
               </div>
             </div>
           </div>
+
+          <blockquote className="mb-4 border-l-2 border-white/20 pl-4 text-sm italic text-zinc-500">
+            &quot;Computer science is no more about computers than astronomy is
+            about telescopes.&quot; — Edsger W. Dijkstra
+          </blockquote>
+
           <p className="max-w-2xl text-lg leading-relaxed text-zinc-400">
-            A passionate Computer Science student at Tsinghua University,
-            currently in my junior year. Interested in computer graphics,
-            artificial intelligence, and building tools that make a difference.
+            A passionate Computer Science and Technology student at Tsinghua
+            University, currently in my junior year. I navigate the
+            computational landscape with curiosity and rigor, cultivating
+            expertise across computational theory, artificial intelligence, and
+            open-source ecosystems. I approach each challenge as both an
+            engineer and an artist — methodically deconstructing problems while
+            crafting elegant solutions.
           </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {contacts.map((contact, index) => (
+              <motion.div
+                key={contact.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.05 }}
+                className="rounded-lg border border-white/5 bg-white/5 p-3"
+              >
+                <div className="mb-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                  <contact.icon className="h-3 w-3" />
+                  {contact.label}
+                </div>
+                {contact.href ? (
+                  <a
+                    href={contact.href}
+                    className="text-xs text-cyan-400 hover:underline"
+                  >
+                    {contact.value}
+                  </a>
+                ) : (
+                  <p className="text-xs text-zinc-300">{contact.value}</p>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -160,7 +249,9 @@ export default function AboutPage() {
                       {item.year}
                     </span>
                     <h4 className="font-medium text-white">{item.title}</h4>
-                    <p className="text-sm text-zinc-500">{item.description}</p>
+                    <p className="text-sm text-zinc-500">
+                      {item.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -181,7 +272,9 @@ export default function AboutPage() {
                   transition={{ delay: 0.4 + index * 0.1 }}
                   className="rounded-lg border border-white/5 bg-white/5 p-3"
                 >
-                  <p className="text-sm font-medium text-white">{award.name}</p>
+                  <p className="text-sm font-medium text-white">
+                    {award.name}
+                  </p>
                   <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
                     <span>{award.org}</span>
                     <span>•</span>
@@ -243,6 +336,21 @@ export default function AboutPage() {
                   ))}
                 </div>
               </div>
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
+                  Domains
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {skills.domains.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs text-green-400"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </BentoCard>
 
@@ -260,7 +368,9 @@ export default function AboutPage() {
                   transition={{ delay: 0.5 + index * 0.1 }}
                   className="flex flex-col items-center rounded-lg border border-white/5 bg-white/5 p-3 text-center"
                 >
-                  <interest.icon className={`mb-1.5 h-6 w-6 ${interest.color}`} />
+                  <interest.icon
+                    className={`mb-1.5 h-6 w-6 ${interest.color}`}
+                  />
                   <span className="text-xs text-zinc-400">{interest.name}</span>
                 </motion.div>
               ))}
@@ -286,7 +396,9 @@ export default function AboutPage() {
                       <p className="font-medium text-white">{project.name}</p>
                       <p className="text-xs text-cyan-400">{project.tech}</p>
                     </div>
-                    <span className="text-xs text-zinc-500">{project.year}</span>
+                    <span className="text-xs text-zinc-500">
+                      {project.year}
+                    </span>
                   </div>
                   <p className="mt-2 text-sm text-zinc-500">
                     {project.description}
@@ -307,11 +419,13 @@ export default function AboutPage() {
                   key={item.name}
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + index * 0.05 }}
-                  className="flex items-center justify-between text-sm"
+                  transition={{ delay: 0.7 + index * 0.04 }}
+                  className="flex items-center justify-between gap-2 text-sm"
                 >
                   <span className="text-zinc-400">{item.name}</span>
-                  <span className="text-xs text-zinc-600">{item.date}</span>
+                  <span className="flex-shrink-0 text-xs text-zinc-600">
+                    {item.date}
+                  </span>
                 </motion.div>
               ))}
             </div>
@@ -324,16 +438,23 @@ export default function AboutPage() {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="mt-4"
         >
-          <BentoCard className="group" delay={8} href="https://blog.houlinzhi.com">
+          <BentoCard
+            className="group"
+            delay={8}
+            href="https://blog.houlinzhi.com"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="rounded-xl border border-white/5 bg-cyan-500/10 p-4">
                   <BookOpen className="h-8 w-8 text-cyan-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Read my blog</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    Read my blog
+                  </h3>
                   <p className="text-zinc-500">
-                    I write about computer graphics, AI, algorithms, and my learning journey.
+                    I write about computer graphics, AI, algorithms, and my
+                    learning journey.
                   </p>
                 </div>
               </div>
