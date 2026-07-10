@@ -13,7 +13,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { GlowingOrb } from "@/components/GlowingOrb";
 
 export default function JsonFormatterPage() {
   const [input, setInput] = useState("");
@@ -89,24 +88,7 @@ export default function JsonFormatterPage() {
   }, [formatJson]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden noise-overlay">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-grid-pattern" />
-      <GlowingOrb
-        color="rgba(0, 212, 255, 0.12)"
-        size={500}
-        top="-100px"
-        right="-100px"
-        delay={0.2}
-      />
-      <GlowingOrb
-        color="rgba(168, 85, 247, 0.08)"
-        size={400}
-        bottom="10%"
-        left="-100px"
-        delay={0.4}
-      />
-
+    <div className="relative min-h-screen overflow-hidden">
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-20">
         {/* Back button */}
@@ -136,7 +118,7 @@ export default function JsonFormatterPage() {
               <FileJson className="h-8 w-8 text-cyan-400" />
             </div>
             <div>
-              <h1 className="gradient-text text-3xl font-bold tracking-tight">
+              <h1 className="text-white text-3xl font-bold tracking-tight">
                 JSON Formatter
               </h1>
               <p className="text-zinc-500">Format, validate, and minify JSON data</p>

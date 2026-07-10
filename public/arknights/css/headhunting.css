@@ -1,20 +1,20 @@
 :root {
   color-scheme: dark;
-  --bg: #050505;
-  --bg-2: #0a0a0a;
-  --panel: #0f0f0f;
-  --panel-2: #161616;
-  --line: rgba(255, 255, 255, 0.14);
-  --line-bright: rgba(255, 255, 255, 0.28);
-  --text: #edf3f5;
-  --muted: #9aa9af;
-  --soft: #c6d2d7;
+  --bg: #1b1b1e;
+  --bg-2: #1e1e1e;
+  --panel: #1e1e1e;
+  --panel-2: #252525;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-bright: rgba(255, 255, 255, 0.2);
+  --text: #e8e8e8;
+  --muted: #999;
+  --soft: #ccc;
   --yellow: #ff6b35;
   --orange: #ff6b35;
   --cyan: #00d4ff;
   --green: #82e07c;
   --red: #ff5c5c;
-  --shadow: 0 20px 70px rgba(0, 0, 0, 0.4);
+  --shadow: none;
 }
 
 * {
@@ -36,16 +36,7 @@ body {
     sans-serif;
   letter-spacing: 0;
   color: var(--text);
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    radial-gradient(circle at 82% 14%, rgba(0, 212, 255, 0.1), transparent 25rem),
-    linear-gradient(145deg, #050505 0%, #0a0a0a 46%, #050505 100%);
-  background-size:
-    48px 48px,
-    48px 48px,
-    auto,
-    auto;
+  background: var(--bg);
 }
 
 button,

@@ -18,7 +18,6 @@ import {
   Globe,
 } from "lucide-react";
 import Link from "next/link";
-import { GlowingOrb } from "@/components/GlowingOrb";
 import { BentoCard } from "@/components/BentoCard";
 
 const timeline = [
@@ -63,24 +62,7 @@ const skills = {
 
 export default function AboutPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden noise-overlay">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-grid-pattern" />
-      <GlowingOrb
-        color="rgba(168, 85, 247, 0.15)"
-        size={500}
-        top="-100px"
-        left="-100px"
-        delay={0.2}
-      />
-      <GlowingOrb
-        color="rgba(0, 212, 255, 0.1)"
-        size={400}
-        bottom="10%"
-        right="-100px"
-        delay={0.4}
-      />
-
+    <div className="relative min-h-screen overflow-hidden">
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
         {/* Header */}
@@ -102,7 +84,7 @@ export default function AboutPage() {
               </div>
             </motion.div>
             <div>
-              <h1 className="gradient-text text-4xl font-bold tracking-tight">
+              <h1 className="text-white text-4xl font-bold tracking-tight">
                 Linzhi Hou
               </h1>
               <p className="mt-1 text-lg text-zinc-400">侯林之</p>

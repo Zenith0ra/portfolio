@@ -14,7 +14,6 @@ import {
   Search,
 } from "lucide-react";
 import Link from "next/link";
-import { GlowingOrb } from "@/components/GlowingOrb";
 import { BentoCard } from "@/components/BentoCard";
 import { LucideIcon } from "lucide-react";
 
@@ -93,24 +92,7 @@ export default function WorkspacePage() {
   }, [search]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden noise-overlay">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-grid-pattern" />
-      <GlowingOrb
-        color="rgba(255, 107, 53, 0.15)"
-        size={500}
-        top="10%"
-        right="-100px"
-        delay={0.2}
-      />
-      <GlowingOrb
-        color="rgba(168, 85, 247, 0.1)"
-        size={400}
-        bottom="20%"
-        left="-100px"
-        delay={0.4}
-      />
-
+    <div className="relative min-h-screen overflow-hidden">
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-4xl px-6 py-16 md:py-24">
         {/* Header */}
@@ -126,7 +108,7 @@ export default function WorkspacePage() {
                 <Boxes className="h-7 w-7 text-orange-400" />
               </div>
               <div>
-                <h1 className="gradient-text text-3xl font-bold tracking-tight">
+                <h1 className="text-white text-3xl font-bold tracking-tight">
                   Workspace
                 </h1>
                 <p className="text-sm text-zinc-500">Developer tools in browser</p>

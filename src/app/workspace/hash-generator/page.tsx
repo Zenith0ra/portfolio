@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Hash, Copy, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { GlowingOrb } from "@/components/GlowingOrb";
 
 // Hash functions using Web Crypto API
 async function generateHash(text: string, algorithm: string): Promise<string> {
@@ -219,11 +218,7 @@ export default function HashGeneratorPage() {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden noise-overlay">
-            <div className="fixed inset-0 bg-grid-pattern" />
-            <GlowingOrb color="rgba(168, 85, 247, 0.12)" size={500} top="-100px" right="-100px" delay={0.2} />
-            <GlowingOrb color="rgba(0, 212, 255, 0.08)" size={400} bottom="10%" left="-100px" delay={0.4} />
-
+        <div className="relative min-h-screen overflow-hidden">
             <main className="relative z-10 mx-auto max-w-2xl px-6 py-16 md:py-20">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
                     <Link href="/workspace" className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white">
@@ -238,7 +233,7 @@ export default function HashGeneratorPage() {
                             <Hash className="h-8 w-8 text-purple-400" />
                         </div>
                         <div>
-                            <h1 className="gradient-text text-3xl font-bold tracking-tight">Hash Generator</h1>
+                            <h1 className="text-white text-3xl font-bold tracking-tight">Hash Generator</h1>
                             <p className="text-zinc-500">Generate MD5, SHA-1, SHA-256, and more</p>
                         </div>
                     </div>

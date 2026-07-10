@@ -12,7 +12,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
-import { GlowingOrb } from "@/components/GlowingOrb";
 import mermaid from "mermaid";
 
 const templates = {
@@ -258,11 +257,7 @@ export default function DiagramPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden noise-overlay">
-      <div className="fixed inset-0 bg-grid-pattern" />
-      <GlowingOrb color="rgba(168, 85, 247, 0.12)" size={500} top="-100px" right="-100px" delay={0.2} />
-      <GlowingOrb color="rgba(168, 85, 247, 0.08)" size={400} bottom="10%" left="-100px" delay={0.4} />
-
+    <div className="relative min-h-screen overflow-hidden">
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-12 md:py-16">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
           <Link href="/workspace" className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white">
@@ -278,7 +273,7 @@ export default function DiagramPage() {
                 <GitBranch className="h-7 w-7 text-purple-400" />
               </div>
               <div>
-                <h1 className="gradient-text text-2xl font-bold tracking-tight">Diagram Editor</h1>
+                <h1 className="text-white text-2xl font-bold tracking-tight">Diagram Editor</h1>
                 <p className="text-sm text-zinc-500">使用 Mermaid 语法绘制图表</p>
               </div>
             </div>
