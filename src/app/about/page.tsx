@@ -21,6 +21,7 @@ import {
   MessageCircle,
   Hash,
 } from "lucide-react";
+import Image from "next/image";
 import { BentoCard } from "@/components/BentoCard";
 
 const timeline = [
@@ -82,30 +83,20 @@ const skills = {
 const projects = [
   {
     name: "Personal Tech Blog",
-    tech: "Jekyll + Chirpy + GitHub Pages",
-    description:
-      "使用Jekyll静态网站生成器搭建个人技术博客，采用Chirpy主题并进行深度定制。集成了评论系统、搜索功能、PWA支持等特性。32篇技术文章涵盖计算机图形学、人工智能、算法等领域。网站具备响应式设计，支持深色/浅色主题切换。",
+    tech: "blog.houlinzhi.com",
+    description: "个人技术博客，记录学习笔记与思考。",
     year: "2024",
   },
   {
     name: "Personal Website",
-    tech: "Next.js + Tailwind CSS + Vercel",
-    description:
-      "Built portfolio with Arknights headhunting probability calculator (4-tab tool with official rules), 6 workspace developer tools, and unified Chirpy-inspired design system.",
+    tech: "houlinzhi.com",
+    description: "个人主页，含工具集与明日方舟寻访概率终端。",
     year: "2025",
   },
   {
-    name: "Algorithm Practice",
-    tech: "C++ / Python | LeetCode",
-    description:
-      "持续学习和实践经典算法与数据结构，在LeetCode等平台上解决编程问题。涵盖排序算法、搜索算法、动态规划、图论等主题，不断提升算法思维和编程能力。",
-    year: "2023 - present",
-  },
-  {
-    name: "Open Source Contributions",
-    tech: "GitHub",
-    description:
-      "积极参与开源社区，通过GitHub贡献代码和文档。学习协作开发流程，提升代码质量意识，培养团队合作精神和技术交流能力。",
+    name: "Open Source",
+    tech: "github.com/Zenith0ra",
+    description: "在 GitHub 上参与开源项目。",
     year: "2024 - present",
   },
 ];
@@ -155,8 +146,14 @@ export default function AboutPage() {
           className="mb-12"
         >
           <div className="mb-6 flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-zinc-800 text-2xl font-bold text-white">
-              Z
+            <div className="h-20 w-20 overflow-hidden rounded-2xl border border-white/10">
+              <Image
+                src="/avatar.jpg"
+                alt="Avatar"
+                width={80}
+                height={80}
+                className="h-full w-full object-cover"
+              />
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white">
