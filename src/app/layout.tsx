@@ -21,6 +21,19 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  openGraph: {
+    title: "Zenith | Linzhi Hou",
+    description: "CS Student @ Tsinghua University. Personal website with tools and projects.",
+    url: "https://houlinzhi.com",
+    siteName: "Linzhi Hou",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Zenith | Linzhi Hou",
+    description: "CS Student @ Tsinghua University. Personal website with tools and projects.",
+  },
 };
 
 export default function RootLayout({
