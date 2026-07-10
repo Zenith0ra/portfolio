@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SiteHeader } from "@/components/SiteHeader";
 
 const outfit = Outfit({
   variable: "--font-geist-sans",
@@ -30,8 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased font-sans pt-14`}
       >
+        <SiteHeader />
         {children}
       </body>
     </html>

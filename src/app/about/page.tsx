@@ -20,7 +20,6 @@ import {
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
 import { BentoCard } from "@/components/BentoCard";
-import { PageNav } from "@/components/PageNav";
 
 const timeline = [
   {
@@ -84,8 +83,6 @@ export default function AboutPage() {
 
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
-        <PageNav />
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -7,7 +7,6 @@ import {
   Boxes,
   Code2,
   Crosshair,
-  Sparkles,
   User,
   MapPin,
   Mail,
@@ -19,7 +18,6 @@ import { GlowingOrb } from "@/components/GlowingOrb";
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden noise-overlay">
-      {/* Background effects */}
       <div className="fixed inset-0 bg-grid-pattern" />
       <GlowingOrb
         color="rgba(0, 212, 255, 0.15)"
@@ -36,22 +34,7 @@ export default function Home() {
         delay={0.4}
       />
 
-      {/* Main content */}
-      <main className="relative z-10 mx-auto max-w-3xl px-6 py-16 md:py-24">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-zinc-400">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Welcome to my corner of the internet</span>
-          </div>
-        </motion.div>
-
-        {/* Profile Section */}
+      <main className="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-20">
         <BentoCard className="mb-4" glowColor="cyan" delay={1}>
           <div className="flex flex-col sm:flex-row gap-6">
             <motion.div
@@ -66,7 +49,7 @@ export default function Home() {
                   alt="Avatar"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="96px"
                 />
               </div>
             </motion.div>
@@ -112,101 +95,67 @@ export default function Home() {
                 </span>
               </motion.div>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col gap-2"
+            >
+              <a
+                href="https://github.com/Zenith0ra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-white hover:border-white/20"
+              >
+                <Code2 className="h-4 w-4" /> GitHub
+              </a>
+              <a
+                href="https://blog.houlinzhi.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-white hover:border-white/20"
+              >
+                <BookOpen className="h-4 w-4" /> Blog
+              </a>
+            </motion.div>
           </div>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.65 }}
             className="mt-5 text-zinc-400 leading-relaxed"
           >
             CS Junior at <span className="text-white">Tsinghua University</span>.
             Passionate about computer graphics, AI, and building tools that make a difference.
-            Currently focusing on OS, Networks, and AI courses.
           </motion.p>
         </BentoCard>
 
-        {/* Grid - 2 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          {/* Blog */}
-          <BentoCard
-            className="group"
-            glowColor="purple"
-            delay={2}
-            href="https://blog.houlinzhi.com"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-xl bg-purple-500/10 p-3">
-                <BookOpen className="h-6 w-6 text-purple-400" />
-              </div>
-              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </div>
-            <h3 className="text-lg font-semibold text-white">Blog</h3>
-            <p className="mt-1 text-sm text-zinc-500">Thoughts, tutorials & notes</p>
-          </BentoCard>
-
-          {/* GitHub */}
-          <BentoCard
-            className="group"
-            glowColor="cyan"
-            delay={3}
-            href="https://github.com/Zenith0ra"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-xl bg-cyan-500/10 p-3">
-                <Code2 className="h-6 w-6 text-cyan-400" />
-              </div>
-              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </div>
-            <h3 className="text-lg font-semibold text-white">GitHub</h3>
-            <p className="mt-1 text-sm text-zinc-500">Open source projects</p>
-          </BentoCard>
-
-          {/* Arknights */}
-          <BentoCard
-            className="group"
-            glowColor="orange"
-            delay={4}
-            href="/arknights"
-          >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <BentoCard className="group" glowColor="orange" delay={2} href="/arknights">
             <div className="flex items-start justify-between mb-4">
               <div className="rounded-xl bg-orange-500/10 p-3">
                 <Crosshair className="h-6 w-6 text-orange-400" />
               </div>
-              <div className="flex items-center gap-2">
-                <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-              </div>
+              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </div>
             <h3 className="text-lg font-semibold text-white">Arknights</h3>
             <p className="mt-1 text-sm text-zinc-500">Headhunting probability tool</p>
           </BentoCard>
 
-          {/* Workspace */}
-          <BentoCard
-            className="group"
-            glowColor="cyan"
-            delay={5}
-            href="/workspace"
-          >
+          <BentoCard className="group" glowColor="cyan" delay={3} href="/workspace">
             <div className="flex items-start justify-between mb-4">
               <div className="rounded-xl bg-cyan-500/10 p-3">
                 <Boxes className="h-6 w-6 text-cyan-400" />
               </div>
-              <div className="flex items-center gap-2">
-                <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-              </div>
+              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </div>
             <h3 className="text-lg font-semibold text-white">Workspace</h3>
             <p className="mt-1 text-sm text-zinc-500">Tools & experiments</p>
           </BentoCard>
 
-          {/* About */}
-          <BentoCard
-            className="group"
-            glowColor="purple"
-            delay={6}
-            href="/about"
-          >
+          <BentoCard className="group" glowColor="purple" delay={4} href="/about">
             <div className="flex items-start justify-between mb-4">
               <div className="rounded-xl bg-purple-500/10 p-3">
                 <User className="h-6 w-6 text-purple-400" />
@@ -218,22 +167,44 @@ export default function Home() {
           </BentoCard>
         </div>
 
-        {/* Quote */}
-        <BentoCard glowColor="purple" delay={7}>
-          <div className="flex items-center justify-between">
-            <p className="font-mono text-sm text-zinc-500">
-              <span className="text-purple-400">&quot;</span>
-              Stay curious, keep building.
-              <span className="text-purple-400">&quot;</span>
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-              <span className="text-xs text-zinc-600">Available</span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <BentoCard className="group" glowColor="purple" delay={5} href="https://blog.houlinzhi.com">
+            <div className="flex items-start justify-between mb-4">
+              <div className="rounded-xl bg-purple-500/10 p-3">
+                <BookOpen className="h-6 w-6 text-purple-400" />
+              </div>
+              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </div>
-          </div>
-        </BentoCard>
+            <h3 className="text-lg font-semibold text-white">Blog</h3>
+            <p className="mt-1 text-sm text-zinc-500">Thoughts, tutorials & notes</p>
+          </BentoCard>
 
-        {/* Footer */}
+          <BentoCard className="group" glowColor="cyan" delay={6} href="https://github.com/Zenith0ra">
+            <div className="flex items-start justify-between mb-4">
+              <div className="rounded-xl bg-cyan-500/10 p-3">
+                <Code2 className="h-6 w-6 text-cyan-400" />
+              </div>
+              <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            </div>
+            <h3 className="text-lg font-semibold text-white">GitHub</h3>
+            <p className="mt-1 text-sm text-zinc-500">Open source projects</p>
+          </BentoCard>
+
+          <BentoCard glowColor="purple" delay={7}>
+            <div className="flex h-full flex-col justify-center">
+              <p className="font-mono text-sm text-zinc-500">
+                <span className="text-purple-400">&quot;</span>
+                Stay curious, keep building.
+                <span className="text-purple-400">&quot;</span>
+              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+                <span className="text-xs text-zinc-600">Available</span>
+              </div>
+            </div>
+          </BentoCard>
+        </div>
+
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

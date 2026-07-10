@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
-import { PageNav } from "@/components/PageNav";
 import mermaid from "mermaid";
 
 const templates = {
@@ -265,7 +264,6 @@ export default function DiagramPage() {
       <GlowingOrb color="rgba(168, 85, 247, 0.08)" size={400} bottom="10%" left="-100px" delay={0.4} />
 
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-12 md:py-16">
-        <PageNav />
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
           <Link href="/workspace" className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white">
             <ArrowLeft className="h-4 w-4" />

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { GlowingOrb } from "@/components/GlowingOrb";
-import { PageNav } from "@/components/PageNav";
 
 export default function JsonFormatterPage() {
   const [input, setInput] = useState("");
@@ -110,8 +109,6 @@ export default function JsonFormatterPage() {
 
       {/* Main content */}
       <main className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-20">
-        <PageNav />
-
         {/* Back button */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
