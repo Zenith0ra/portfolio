@@ -190,28 +190,30 @@ export default function AboutPage() {
             crafting elegant solutions.
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {contacts.map((contact, index) => (
               <motion.div
                 key={contact.label}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.05 }}
-                className="rounded-lg border border-white/5 bg-white/5 p-3"
+                className="flex items-center justify-between gap-2 rounded-lg border border-white/5 bg-white/5 px-3 py-2"
               >
-                <div className="mb-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                <span className="flex flex-shrink-0 items-center gap-1.5 text-xs text-zinc-500">
                   <contact.icon className="h-3 w-3" />
                   {contact.label}
-                </div>
+                </span>
                 {contact.href ? (
                   <a
                     href={contact.href}
-                    className="text-xs text-cyan-400 hover:underline"
+                    className="truncate text-xs text-cyan-400 hover:underline"
                   >
                     {contact.value}
                   </a>
                 ) : (
-                  <p className="text-xs text-zinc-300">{contact.value}</p>
+                  <span className="truncate text-xs text-zinc-300">
+                    {contact.value}
+                  </span>
                 )}
               </motion.div>
             ))}

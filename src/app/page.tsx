@@ -138,7 +138,7 @@ export default function Home() {
         </BentoCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 sm:mx-auto sm:max-w-2xl">
+      <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-3">
         <BentoCard className="group" delay={5} href="https://github.com/Zenith0ra">
           <div className="flex items-start justify-between mb-4">
             <div className="rounded-lg bg-cyan-500/10 p-3">
@@ -151,6 +151,16 @@ export default function Home() {
         </BentoCard>
 
         <BentoCard delay={6}>
+          <h3 className="mb-3 text-sm font-medium text-zinc-400">Interests</h3>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2.5 py-1 text-xs text-purple-400">Graphics</span>
+            <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-xs text-cyan-400">AI</span>
+            <span className="rounded-full border border-orange-500/20 bg-orange-500/10 px-2.5 py-1 text-xs text-orange-400">Open Source</span>
+            <span className="rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs text-green-400">Web Dev</span>
+          </div>
+        </BentoCard>
+
+        <BentoCard delay={7}>
           <div className="flex h-full flex-col justify-center">
             <p className="font-mono text-sm text-zinc-500">
               <span className="text-purple-400">&quot;</span>
