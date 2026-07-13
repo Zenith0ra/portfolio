@@ -174,7 +174,7 @@ export default function Home() {
                 Linzhi Hou · 侯林之
               </h1>
               <p className="mt-1 text-zinc-400">
-                Senior CS Student @ Tsinghua University
+                Senior CST Student @ Tsinghua University
               </p>
               <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
                 <span className="flex items-center gap-1">

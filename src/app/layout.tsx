@@ -18,13 +18,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://houlinzhi.com"),
   title: "Zenith | Linzhi Hou",
-  description: "Personal portal of Linzhi Hou - CS Undergrad @ Tsinghua University",
+  description: "Personal portal of Linzhi Hou - CST Student @ Tsinghua University",
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
     title: "Zenith | Linzhi Hou",
-    description: "CS Student @ Tsinghua University. Personal website with tools and projects.",
+    description: "CST Student @ Tsinghua University. Personal website with tools and projects.",
     url: "https://houlinzhi.com",
     siteName: "Linzhi Hou",
     locale: "en_US",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Zenith | Linzhi Hou",
-    description: "CS Student @ Tsinghua University. Personal website with tools and projects.",
+    description: "CST Student @ Tsinghua University. Personal website with tools and projects.",
   },
 };
 
