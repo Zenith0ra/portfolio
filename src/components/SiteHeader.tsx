@@ -61,7 +61,7 @@ export function SiteHeader() {
           href="/"
           className="font-mono text-sm font-medium tracking-tight text-white"
         >
-          Hou Linzhi
+          Linzhi Hou
         </Link>
 
         <nav className="hidden items-center gap-0.5 sm:flex">

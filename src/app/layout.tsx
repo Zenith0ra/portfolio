@@ -16,6 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://houlinzhi.com"),
   title: "Zenith | Linzhi Hou",
   description: "Personal portal of Linzhi Hou - CS Undergrad @ Tsinghua University",
   icons: {

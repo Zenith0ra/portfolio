@@ -9,7 +9,6 @@ interface BentoCardProps {
     className?: string;
     delay?: number;
     href?: string;
-    glowColor?: "cyan" | "purple" | "orange";
 }
 
 export function BentoCard({
