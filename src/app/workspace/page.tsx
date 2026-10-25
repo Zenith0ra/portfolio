@@ -18,6 +18,7 @@ import {
   Clock,
   QrCode,
   Timer,
+  Printer,
 } from "lucide-react";
 import { BentoCard } from "@/components/BentoCard";
 import { LucideIcon } from "lucide-react";
@@ -144,6 +145,14 @@ const categories: { label: string; tools: Tool[] }[] = [
         color: "purple",
         tags: ["Count", "Analyze"],
       },
+      {
+        title: "Notebook Paper",
+        description: "Printable A4 ruled sheets",
+        icon: Printer,
+        href: "/workspace/notebook-paper",
+        color: "purple",
+        tags: ["A4", "PDF", "Canvas"],
+      },
     ],
   },
   {
@@ -209,7 +218,7 @@ export default function WorkspacePage() {
                 Workspace
               </h1>
               <p className="text-sm text-zinc-500">
-                14 tools across 3 categories
+                15 tools across 3 categories
               </p>
             </div>
           </div>

@@ -58,3 +58,52 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* range slider used by tool panels */
+input[type="range"].range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"].range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+input[type="range"].range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #a855f7;
+  border: 2px solid #1e1e1e;
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.35);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+input[type="range"].range:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22);
+}
+
+input[type="range"].range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+input[type="range"].range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #a855f7;
+  border: 2px solid #1e1e1e;
+  cursor: pointer;
+}
