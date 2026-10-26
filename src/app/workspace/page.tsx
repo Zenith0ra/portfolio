@@ -13,6 +13,7 @@ import {
   GitBranch,
   Hash,
   KeyRound,
+  Languages,
   Link,
   Palette,
   Clock,
@@ -153,6 +154,14 @@ const categories: { label: string; tools: Tool[] }[] = [
         color: "purple",
         tags: ["A4", "PDF", "Canvas"],
       },
+      {
+        title: "Vocab Cards",
+        description: "Japanese vocabulary cards",
+        icon: Languages,
+        href: "/workspace/vocab-cards",
+        color: "cyan",
+        tags: ["Japanese", "AI"],
+      },
     ],
   },
   {
@@ -218,7 +227,7 @@ export default function WorkspacePage() {
                 Workspace
               </h1>
               <p className="text-sm text-zinc-500">
-                15 tools across 3 categories
+                16 tools across 3 categories
               </p>
             </div>
           </div>

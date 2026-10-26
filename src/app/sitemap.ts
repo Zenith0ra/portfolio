@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/workspace/url-encode`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${base}/workspace/text-stats`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${base}/workspace/notebook-paper`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${base}/workspace/vocab-cards`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${base}/arknights`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/arknights/headhunting`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];
