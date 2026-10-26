@@ -212,6 +212,12 @@ export function ImportPanel({
       .filter((r) => !onlySuspect || suspectSet.has(r.i));
   }, [drafts, onlySuspect, suspectSet]);
 
+  // Fixing the last flagged row would otherwise strand the user in a filtered
+  // view with no chip left to switch back.
+  useEffect(() => {
+    if (onlySuspect && fill && fill.suspects.length === 0) setOnlySuspect(false);
+  }, [onlySuspect, fill]);
+
   const exampleCount = drafts?.filter((d) => d.examples.length > 0).length ?? 0;
 
   return (
@@ -376,7 +382,7 @@ export function ImportPanel({
               {exampleCount > 0 && (
                 <span className="text-zinc-600">· 例句 {exampleCount}</span>
               )}
-              {fill && fill.suspects.length > 0 && (
+              {fill && (fill.suspects.length > 0 || onlySuspect) && (
                 <button
                   onClick={() => setOnlySuspect((v) => !v)}
                   className={`rounded px-1.5 py-0.5 text-[11.5px] transition-colors ${
@@ -385,7 +391,9 @@ export function ImportPanel({
                       : "bg-amber-400/10 text-amber-300/90 hover:bg-amber-400/15"
                   }`}
                 >
-                  {onlySuspect ? "全部" : `${fill.suspects.length} 条待核对`}
+                  {onlySuspect
+                    ? `全部 ${drafts.length}`
+                    : `${fill.suspects.length} 条待核对`}
                 </button>
               )}
             </div>
