@@ -18,6 +18,10 @@ export const MODEL_HINTS = ["deepseek-flash", "deepseek-chat", "deepseek-reasone
 const SYSTEM = `你是日语词汇数据结构化工具。唯一任务是把用户提供的日语单词表整理成 JSON。
 你不创作、不补充、不猜测原文里没有的信息。`;
 
+/** Same role, plus the one thing we do allow it to write from scratch. */
+const SYSTEM_WITH_EXAMPLES = `你是日语词汇数据结构化工具。唯一任务是把用户提供的日语单词表整理成 JSON。
+除了例句之外，你不创作、不补充、不猜测原文里没有的信息。例句是唯一允许你编写的字段。`;
+
 const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 {"words":[{"kana":"","kanji":"","meaning":"","pos":"","pitch":null,"examples":[{"jp":"","cn":""}],"note":""}]}
 
@@ -27,7 +31,7 @@ const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 - meaning：中文释义。原文是日文解释的，译成中文。
 - pos：词性，只能取 [名] [代] [动1] [动2] [动3] [形1] [形2] [副] [连体] [接续] [感] [数] [助] 之一，判断不了用空字符串。
 - pitch：声调，只在原文明确写出数字时填。见下方「声调」一节。
-- examples：例句数组。只在原文给出了例句时填写，cn 没有就填空字符串。
+- examples：例句数组。${"@EXAMPLES@"}
 - note：原文的附注、易混提示、记忆点，没有就空字符串。
 
 声调（重要）：
@@ -37,10 +41,15 @@ const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 - 没有明写数字就填 null。绝对不要凭语感猜声调。
 
 硬性要求：
-1. 不得编造原文没有的例句。
+1. 除例句外，不得编造原文没有的信息。
 2. 折线不是声调数据，不要转换、不要推测。
 3. 词条数量必须与原文一致，不合并、不遗漏、不排序。
 4. 只输出 JSON 对象本身。`;
+
+/** Rule for the `examples` field, which flips depending on the checkbox. */
+const EXAMPLES_COPY = "原文给了例句就照抄，没有就填空数组。";
+const EXAMPLES_WRITE =
+  "原文给了例句就照抄。没有就给每个词补一句：8～14 个假名长度、日常口语、只用这个词的常见搭配，cn 写中文翻译。宁可句子朴素，也不要生造搭配或用错的助词。";
 
 export class AiError extends Error {}
 
@@ -216,18 +225,19 @@ export async function aiStructure(
   opts: StructureOptions,
   cfg: AiConfig
 ): Promise<WordDraft[]> {
-  const extra = opts.withExamples
-    ? `\n补充：原文没有例句时，为每个词补一个简短、常见、语法正确的例句，并在例句的 cn 里给中文翻译。`
-    : "";
-
-  const instruction = `${FIELD_SPEC}${extra}\n\n把下面的日语单词表转成 JSON 对象。`;
+  const spec = FIELD_SPEC.replace(
+    "@EXAMPLES@",
+    opts.withExamples ? EXAMPLES_WRITE : EXAMPLES_COPY
+  );
+  const system = opts.withExamples ? SYSTEM_WITH_EXAMPLES : SYSTEM;
+  const instruction = `${spec}\n\n把下面的日语单词表转成 JSON 对象。`;
 
   // Image path: one request, model reads the picture directly.
   if (opts.imageDataUrl) {
     const content = await chat(
       cfg,
       [
-        { role: "system", content: SYSTEM },
+        { role: "system", content: system },
         {
           role: "user",
           content: [
@@ -264,7 +274,7 @@ ${instruction}`,
     const content = await chat(
       cfg,
       [
-        { role: "system", content: SYSTEM },
+        { role: "system", content: system },
         {
           role: "user",
           content: `${instruction}\n\n原文：\n"""\n${batches[i]}\n"""`,

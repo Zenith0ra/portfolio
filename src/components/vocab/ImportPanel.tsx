@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   ImagePlus,
@@ -31,6 +31,12 @@ interface Props {
 
 type Busy = "parse" | "ai" | "image" | null;
 
+const JP =
+  '"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif';
+
+const CELL =
+  "min-w-0 rounded border border-transparent bg-transparent px-1 py-0.5 text-[12px] text-zinc-200 transition-colors hover:border-white/10 focus:border-purple-500/50 focus:bg-black/30 focus:outline-none";
+
 export function ImportPanel({
   cfg,
   hasAiKey,
@@ -50,6 +56,7 @@ export function ImportPanel({
   const [images, setImages] = useState<string[]>([]);
   const [withExamples, setWithExamples] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [onlySuspect, setOnlySuspect] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Warm the accent dictionary while the user is still typing or picking files.
@@ -57,16 +64,33 @@ export function ImportPanel({
     loadAccent();
   }, []);
 
-  /** Show the rows, then overwrite their pitch with dictionary values. */
+  /** Show the rows, then fill pitch from the dictionary. */
   const finish = useCallback(async (list: WordDraft[]) => {
     setDrafts(list);
     setFill(null);
+    setOnlySuspect(false);
     const ok = await loadAccent();
     if (!ok) return;
     const res = applyPitch(list);
     setDrafts(res.drafts);
     setFill(res);
   }, []);
+
+  /** Editing a field can change which dictionary entry applies, so redo it. */
+  const patch = useCallback(
+    (i: number, next: Partial<WordDraft>) => {
+      if (!drafts) return;
+      const updated = drafts.map((d, idx) => (idx === i ? { ...d, ...next } : d));
+      if (fill && ("kana" in next || "kanji" in next)) {
+        const res = applyPitch(updated);
+        setDrafts(res.drafts);
+        setFill(res);
+        return;
+      }
+      setDrafts(updated);
+    },
+    [drafts, fill]
+  );
 
   const runLocal = useCallback(async () => {
     setError(null);
@@ -94,7 +118,6 @@ export function ImportPanel({
         setError("AI 没有返回可用词条，检查一下原文");
         return;
       }
-      setDrafts(out);
       setSkipped(0);
       await finish(out);
     } catch (err) {
@@ -120,14 +143,12 @@ export function ImportPanel({
     try {
       const all: WordDraft[] = [];
       for (const img of images) {
-        const part = await aiStructure({ imageDataUrl: img }, cfg);
-        all.push(...part);
+        all.push(...(await aiStructure({ imageDataUrl: img, withExamples }, cfg)));
       }
       if (!all.length) {
         setError("这张图没读出词条");
         return;
       }
-      setDrafts(all);
       setSkipped(0);
       await finish(all);
     } catch (err) {
@@ -139,7 +160,7 @@ export function ImportPanel({
     } finally {
       setBusy(null);
     }
-  }, [cfg, hasAiKey, images, onOpenSettings, finish]);
+  }, [cfg, hasAiKey, images, withExamples, onOpenSettings, finish]);
 
   const handleFiles = useCallback(async (files: FileList) => {
     const imgFiles: File[] = [];
@@ -171,7 +192,27 @@ export function ImportPanel({
     setError(null);
     setText("");
     setImages([]);
+    setOnlySuspect(false);
   };
+
+  const suspectSet = useMemo(
+    () => new Set(fill?.suspectAt ?? []),
+    [fill]
+  );
+  const suspectInfo = useMemo(() => {
+    const m = new Map<number, string[]>();
+    for (const s of fill?.suspects ?? []) m.set(s.index, s.expected);
+    return m;
+  }, [fill]);
+
+  const rows = useMemo(() => {
+    if (!drafts) return [];
+    return drafts
+      .map((d, i) => ({ d, i }))
+      .filter((r) => !onlySuspect || suspectSet.has(r.i));
+  }, [drafts, onlySuspect, suspectSet]);
+
+  const exampleCount = drafts?.filter((d) => d.examples.length > 0).length ?? 0;
 
   return (
     <div
@@ -295,7 +336,7 @@ export function ImportPanel({
             onChange={(e) => setWithExamples(e.target.checked)}
             className="h-3 w-3 accent-purple-500"
           />
-          让 AI 补例句
+          补例句
         </label>
       </div>
 
@@ -320,9 +361,9 @@ export function ImportPanel({
       {drafts && (
         <div className="rounded-lg border border-white/[0.08] bg-black/20">
           <div className="flex items-center justify-between border-b border-white/[0.06] px-3.5 py-2.5">
-            <div className="flex flex-wrap items-center gap-2 text-[12px]">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
               <Check className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-zinc-300">认出 {drafts.length} 个词</span>
+              <span className="text-zinc-300">{drafts.length} 个词</span>
               {skipped > 0 && (
                 <span className="text-zinc-600">· {skipped} 行没读懂</span>
               )}
@@ -332,66 +373,119 @@ export function ImportPanel({
                   {drafts.length}
                 </span>
               )}
-              {fill && fill.suspect > 0 && (
-                <span className="text-amber-400/70">
-                  · {fill.suspect} 条汉字待核对
-                </span>
+              {exampleCount > 0 && (
+                <span className="text-zinc-600">· 例句 {exampleCount}</span>
+              )}
+              {fill && fill.suspects.length > 0 && (
+                <button
+                  onClick={() => setOnlySuspect((v) => !v)}
+                  className={`rounded px-1.5 py-0.5 text-[11.5px] transition-colors ${
+                    onlySuspect
+                      ? "bg-amber-400/20 text-amber-200"
+                      : "bg-amber-400/10 text-amber-300/90 hover:bg-amber-400/15"
+                  }`}
+                >
+                  {onlySuspect ? "全部" : `${fill.suspects.length} 条待核对`}
+                </button>
               )}
             </div>
             <button
               onClick={reset}
-              className="text-[11px] text-zinc-600 transition-colors hover:text-zinc-300"
+              className="shrink-0 text-[11px] text-zinc-600 transition-colors hover:text-zinc-300"
             >
               清空
             </button>
           </div>
 
-          <div className="max-h-56 overflow-y-auto">
-            <table className="w-full text-[12px]">
-              <tbody>
-                {drafts.slice(0, 40).map((d, i) => (
-                  <tr
+          <div className="max-h-[340px] overflow-y-auto">
+            <div className="flex items-center gap-2 border-b border-white/[0.05] px-3 py-1 text-[10.5px] text-zinc-700">
+              <span className="w-28 shrink-0 px-1">假名</span>
+              <span className="w-24 shrink-0 px-1">汉字</span>
+              <span className="w-10 shrink-0 px-1">词性</span>
+              <span className="w-7 shrink-0 px-1">调</span>
+              <span className="min-w-0 flex-1 px-1">释义</span>
+            </div>
+            {rows.length === 0 ? (
+              <div className="px-3.5 py-6 text-center text-[11.5px] text-zinc-600">
+                没有待核对的词
+              </div>
+            ) : (
+              rows.map(({ d, i }) => {
+                const suspect = suspectSet.has(i);
+                const expected = suspectInfo.get(i) ?? [];
+                return (
+                  <div
                     key={i}
-                    className={`border-b border-white/[0.04] last:border-0 ${
-                      fill?.suspectAt.includes(i) ? "bg-amber-500/[0.07]" : ""
+                    className={`border-b border-white/[0.04] px-3 py-1 last:border-0 ${
+                      suspect ? "bg-amber-500/[0.06]" : ""
                     }`}
                   >
-                    <td
-                      className="w-28 px-3.5 py-1.5 text-zinc-200"
-                      style={{
-                        fontFamily:
-                          '"Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif',
-                      }}
-                    >
-                      {d.kana}
-                    </td>
-                    <td
-                      className="w-24 px-2 py-1.5 text-zinc-500"
-                      style={{
-                        fontFamily:
-                          '"Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif',
-                      }}
-                    >
-                      {d.kanji}
-                    </td>
-                    <td className="w-12 px-2 py-1.5 text-[11px] text-purple-400/80">
-                      {d.pos}
-                    </td>
-                    <td
-                      className="w-8 px-1 py-1.5 text-[11px] tabular-nums text-zinc-500"
-                      title="声调"
-                    >
-                      {d.pitch === null ? "—" : d.pitch}
-                    </td>
-                    <td className="px-2 py-1.5 text-zinc-400">{d.meaning}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {drafts.length > 40 && (
-              <div className="px-3.5 py-2 text-[11px] text-zinc-600">
-                还有 {drafts.length - 40} 个…
-              </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={d.kana}
+                        onChange={(e) => patch(i, { kana: e.target.value })}
+                        spellCheck={false}
+                        style={{ fontFamily: JP }}
+                        className={`${CELL} w-28 shrink-0`}
+                      />
+                      <input
+                        value={d.kanji}
+                        onChange={(e) => patch(i, { kanji: e.target.value })}
+                        spellCheck={false}
+                        style={{ fontFamily: JP }}
+                        className={`${CELL} w-24 shrink-0 ${
+                          suspect ? "text-amber-200" : "text-zinc-400"
+                        }`}
+                      />
+                      <input
+                        value={d.pos}
+                        onChange={(e) => patch(i, { pos: e.target.value })}
+                        spellCheck={false}
+                        className={`${CELL} w-10 shrink-0 text-[11px] text-purple-400/80`}
+                      />
+                      <input
+                        value={d.pitch === null ? "" : String(d.pitch)}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/[^0-9]/g, "");
+                          patch(i, { pitch: v === "" ? null : Number(v) });
+                        }}
+                        inputMode="numeric"
+                        placeholder="—"
+                        className={`${CELL} w-7 shrink-0 text-[11px] tabular-nums placeholder:text-zinc-600 ${
+                          d.pitch === null ? "text-zinc-600" : "text-zinc-300"
+                        }`}
+                      />
+                      <input
+                        value={d.meaning}
+                        onChange={(e) => patch(i, { meaning: e.target.value })}
+                        className={`${CELL} flex-1 text-zinc-400`}
+                      />
+                    </div>
+                    {suspect && (
+                      <div className="mt-0.5 flex flex-wrap items-center gap-1.5 pb-1 text-[11px]">
+                        <span className="w-28 shrink-0" />
+                        <span className="text-amber-400/60">词典</span>
+                        {expected.length === 0 ? (
+                          <span className="text-amber-400/50">
+                            没有这个读音
+                          </span>
+                        ) : (
+                          expected.map((w) => (
+                            <button
+                              key={w}
+                              onClick={() => patch(i, { kanji: w })}
+                              style={{ fontFamily: JP }}
+                              className="rounded bg-amber-400/10 px-1.5 py-0.5 text-amber-200 transition-colors hover:bg-amber-400/25"
+                            >
+                              {w}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
 

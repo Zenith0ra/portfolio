@@ -146,15 +146,42 @@ export function lookupPitch(kana: string, kanji = ""): PitchHit | null {
   return null;
 }
 
+/**
+ * Headwords the dictionary lists under `kana`, written forms first. Used to
+ * show a plausible correction when a row's kanji is not one of them.
+ */
+export function headwords(kana: string): string[] {
+  if (!table) return [];
+  const key = normKana(kana);
+  if (!key) return [];
+  const row = table.get(key);
+  if (!row) return [];
+
+  const words: string[] = [];
+  for (const e of parseRow(row)) {
+    if (e.word === key || words.includes(e.word)) continue;
+    words.push(e.word);
+  }
+  return words.slice(0, 2);
+}
+
 export type DictState = "verified" | "reading-only" | "unknown";
+
+/** A row whose kanji is not a headword of its own reading. */
+export interface Suspect {
+  index: number;
+  kana: string;
+  kanji: string;
+  /** What the dictionary writes for this reading. */
+  expected: string[];
+}
 
 export interface FillResult {
   drafts: WordDraft[];
   verified: number;
   readingOnly: number;
   unknown: number;
-  suspect: number;
-  /** Row indexes whose kanji is not a headword of its own reading. */
+  suspects: Suspect[];
   suspectAt: number[];
 }
 
@@ -167,7 +194,7 @@ export function applyPitch(drafts: WordDraft[]): FillResult {
   let verified = 0;
   let readingOnly = 0;
   let unknown = 0;
-  const suspectAt: number[] = [];
+  const suspects: Suspect[] = [];
 
   const out = drafts.map((d, i) => {
     const hit = lookupPitch(d.kana, d.kanji);
@@ -182,7 +209,14 @@ export function applyPitch(drafts: WordDraft[]): FillResult {
       // A kanji we could not find under its own reading usually means the
       // model misread one of the two. Not proof — the textbook may have a
       // word the dictionary lacks — so this only raises a flag.
-      if (normWord(d.kanji)) suspectAt.push(i);
+      if (normWord(d.kanji)) {
+        suspects.push({
+          index: i,
+          kana: d.kana,
+          kanji: d.kanji,
+          expected: headwords(d.kana),
+        });
+      }
     }
     return { ...d, pitch: hit.pitch };
   });
@@ -192,7 +226,7 @@ export function applyPitch(drafts: WordDraft[]): FillResult {
     verified,
     readingOnly,
     unknown,
-    suspect: suspectAt.length,
-    suspectAt,
+    suspects,
+    suspectAt: suspects.map((s) => s.index),
   };
 }
