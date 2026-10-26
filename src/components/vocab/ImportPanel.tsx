@@ -72,7 +72,7 @@ export function ImportPanel({
     setError(null);
     const out = parseWordList(text);
     if (out.quality === "empty") {
-      setError("没认出任何词条，换个格式或者用 AI 整理试试");
+      setError("没认出词条");
       setDrafts(null);
       return;
     }
@@ -82,7 +82,7 @@ export function ImportPanel({
 
   const runAi = useCallback(async () => {
     if (!hasAiKey) {
-      setError("这个操作要用 AI，先在右上角设置里填 API Key");
+      setError("先填 API Key");
       onOpenSettings();
       return;
     }
@@ -110,7 +110,7 @@ export function ImportPanel({
 
   const runImages = useCallback(async () => {
     if (!hasAiKey) {
-      setError("这个操作要用 AI，先在右上角设置里填 API Key");
+      setError("先填 API Key");
       onOpenSettings();
       return;
     }
@@ -124,7 +124,7 @@ export function ImportPanel({
         all.push(...part);
       }
       if (!all.length) {
-        setError("这张图没读出词条，换一张清楚一点的");
+        setError("这张图没读出词条");
         return;
       }
       setDrafts(all);
@@ -191,7 +191,7 @@ export function ImportPanel({
       style={{ background: dragging ? undefined : "#1e1e1e" }}
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-[14px] font-medium text-white">导入单词表</h2>
+        <h2 className="text-[14px] font-medium text-white">导入</h2>
         {onCancel && (
           <button
             onClick={onCancel}

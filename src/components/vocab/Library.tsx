@@ -71,7 +71,7 @@ function Editor({
         <textarea
           value={exampleText}
           onChange={(e) => setExampleText(e.target.value)}
-          placeholder={"日语句子 | 中文\n一行一句"}
+          placeholder={"日语句子 | 中文"}
           className="h-16 min-w-0 flex-1 resize-y rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[12px] leading-relaxed text-zinc-200 placeholder:text-zinc-700 focus:border-purple-500/50 focus:outline-none"
           style={{ fontFamily: JP }}
         />

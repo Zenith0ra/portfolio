@@ -79,7 +79,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-3.5">
-          <h2 className="text-[14px] font-medium text-white">AI 整理设置</h2>
+          <h2 className="text-[14px] font-medium text-white">设置</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white"
@@ -99,9 +99,6 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
               autoComplete="off"
               className="w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none"
             />
-            <span className="mt-1.5 block text-[11px] leading-relaxed text-zinc-600">
-              只存本机
-            </span>
           </label>
 
           <label className="block">
@@ -152,7 +149,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
                 className="min-w-0 flex-1 rounded-md border border-white/10 bg-white/[0.04] px-2 py-2 text-[12px] text-zinc-200 focus:border-purple-500/50 focus:outline-none"
               >
                 <option value="">
-                  {voices.length ? "自动（推荐）" : "这台设备没有日语语音"}
+                  {voices.length ? "自动" : "没有日语语音"}
                 </option>
                 {voices.map((v) => (
                   <option key={v.name} value={v.name}>
@@ -170,9 +167,6 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
                 <Volume2 className="h-3.5 w-3.5" />
               </button>
             </div>
-            <span className="mt-1.5 block text-[11px] leading-relaxed text-zinc-600">
-              系统合成音，不是录音
-            </span>
           </div>
 
           {result && (
