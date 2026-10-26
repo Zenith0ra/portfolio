@@ -57,6 +57,8 @@ export function ImportPanel({
   const [withExamples, setWithExamples] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [onlySuspect, setOnlySuspect] = useState(false);
+  /** Rows the user has looked at and declared fine; the dictionary just lacks them. */
+  const [dismissed, setDismissed] = useState<Set<number>>(new Set());
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Warm the accent dictionary while the user is still typing or picking files.
@@ -69,6 +71,7 @@ export function ImportPanel({
     setDrafts(list);
     setFill(null);
     setOnlySuspect(false);
+    setDismissed(new Set());
     const ok = await loadAccent();
     if (!ok) return;
     const res = applyPitch(list);
@@ -85,6 +88,13 @@ export function ImportPanel({
         const res = applyPitch(updated);
         setDrafts(res.drafts);
         setFill(res);
+        // A verdict only applies to the text it was given for.
+        setDismissed((prev) => {
+          if (!prev.has(i)) return prev;
+          const n = new Set(prev);
+          n.delete(i);
+          return n;
+        });
         return;
       }
       setDrafts(updated);
@@ -193,17 +203,25 @@ export function ImportPanel({
     setText("");
     setImages([]);
     setOnlySuspect(false);
+    setDismissed(new Set());
+    setReplace(false);
   };
 
-  const suspectSet = useMemo(
-    () => new Set(fill?.suspectAt ?? []),
-    [fill]
-  );
   const suspectInfo = useMemo(() => {
     const m = new Map<number, string[]>();
     for (const s of fill?.suspects ?? []) m.set(s.index, s.expected);
     return m;
   }, [fill]);
+
+  /** Flags still worth showing: not yet dismissed by the user. */
+  const liveSuspects = useMemo(
+    () => (fill?.suspects ?? []).filter((s) => !dismissed.has(s.index)),
+    [fill, dismissed]
+  );
+  const suspectSet = useMemo(
+    () => new Set(liveSuspects.map((s) => s.index)),
+    [liveSuspects]
+  );
 
   const rows = useMemo(() => {
     if (!drafts) return [];
@@ -212,11 +230,11 @@ export function ImportPanel({
       .filter((r) => !onlySuspect || suspectSet.has(r.i));
   }, [drafts, onlySuspect, suspectSet]);
 
-  // Fixing the last flagged row would otherwise strand the user in a filtered
-  // view with no chip left to switch back.
+  // Clearing the last flag would otherwise strand the user in a filtered view
+  // with no chip left to switch back.
   useEffect(() => {
-    if (onlySuspect && fill && fill.suspects.length === 0) setOnlySuspect(false);
-  }, [onlySuspect, fill]);
+    if (onlySuspect && liveSuspects.length === 0) setOnlySuspect(false);
+  }, [onlySuspect, liveSuspects]);
 
   const exampleCount = drafts?.filter((d) => d.examples.length > 0).length ?? 0;
 
@@ -382,7 +400,7 @@ export function ImportPanel({
               {exampleCount > 0 && (
                 <span className="text-zinc-600">· 例句 {exampleCount}</span>
               )}
-              {fill && (fill.suspects.length > 0 || onlySuspect) && (
+              {fill && (liveSuspects.length > 0 || onlySuspect) && (
                 <button
                   onClick={() => setOnlySuspect((v) => !v)}
                   className={`rounded px-1.5 py-0.5 text-[11.5px] transition-colors ${
@@ -393,7 +411,7 @@ export function ImportPanel({
                 >
                   {onlySuspect
                     ? `全部 ${drafts.length}`
-                    : `${fill.suspects.length} 条待核对`}
+                    : `${liveSuspects.length} 条待核对`}
                 </button>
               )}
             </div>
@@ -472,7 +490,7 @@ export function ImportPanel({
                     {suspect && (
                       <div className="mt-0.5 flex flex-wrap items-center gap-1.5 pb-1 text-[11px]">
                         <span className="w-28 shrink-0" />
-                        <span className="text-amber-400/60">词典</span>
+                        <span className="text-amber-400/60">同音词</span>
                         {expected.length === 0 ? (
                           <span className="text-amber-400/50">
                             没有这个读音
@@ -482,6 +500,7 @@ export function ImportPanel({
                             <button
                               key={w}
                               onClick={() => patch(i, { kanji: w })}
+                              title="用词典的写法替换"
                               style={{ fontFamily: JP }}
                               className="rounded bg-amber-400/10 px-1.5 py-0.5 text-amber-200 transition-colors hover:bg-amber-400/25"
                             >
@@ -489,6 +508,14 @@ export function ImportPanel({
                             </button>
                           ))
                         )}
+                        <button
+                          onClick={() =>
+                            setDismissed((prev) => new Set(prev).add(i))
+                          }
+                          className="rounded px-1.5 py-0.5 text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300"
+                        >
+                          保持原样
+                        </button>
                       </div>
                     )}
                   </div>
