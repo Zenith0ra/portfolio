@@ -1,4 +1,10 @@
-import { asPos, hasKanji, isKanaOnly, type WordDraft } from "./types";
+import {
+  asPos,
+  hasKanji,
+  isKanaOnly,
+  BLANK_CELL,
+  type WordDraft,
+} from "./types";
 
 /**
  * A deliberately dumb, dependency-free parser.
@@ -94,9 +100,11 @@ function parseRow(line: string): WordDraft | null {
   } else if (cells.length >= 2 && isKanaOnly(cells[0])) {
     kana = cells[0].trim();
     cells = cells.slice(1);
-    // A written form is only taken when a meaning still remains after it,
-    // otherwise a bare 「がくせい 学生」 would lose its meaning.
-    if (
+    // A dash where the kanji would be: the word has none, and the next cell is
+    // already the meaning.
+    if (cells.length && BLANK_CELL.test(cells[0])) {
+      cells = cells.slice(1);
+    } else if (
       cells.length >= 2 &&
       hasKanji(cells[0]) &&
       !asPos(cells[0]) &&

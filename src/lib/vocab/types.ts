@@ -67,10 +67,15 @@ export function hasKanji(s: string): boolean {
   return HAS_KANJI.test(s);
 }
 
+/** A dash standing in for "this word has no kanji", as the OCR writes it. */
+export const BLANK_CELL = /^[-—–―－/／]+$/;
+
 /** Part-of-speech labels used by 新标日 and most word lists. */
 const POS_WORDS = [
   "名", "代", "动", "動", "形", "副", "助", "连体", "連体",
   "接续", "接続", "感", "数", "量", "惯用", "慣用", "连语", "連語",
+  // 新标日 also tags these three; the OCR path now preserves them.
+  "疑", "专", "專", "连", "連",
 ];
 
 export function asPos(raw: string): string | null {

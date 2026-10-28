@@ -13,6 +13,7 @@ import {
   AiError,
   aiAnnotateDrafts,
   aiFillExamples,
+  aiImageToText,
   imageToDataUrl,
   aiStructure,
   type AiConfig,
@@ -55,6 +56,7 @@ export function ImportPanel({
   const [fill, setFill] = useState<FillResult | null>(null);
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
+  const [stage, setStage] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [dragging, setDragging] = useState(false);
   const [onlySuspect, setOnlySuspect] = useState(false);
@@ -172,25 +174,56 @@ export function ImportPanel({
     if (!images.length) return;
     setError(null);
     setBusy("image");
+    let transcribed = "";
     try {
-      const all: WordDraft[] = [];
-      for (const img of images) {
-        all.push(...(await aiStructure({ imageDataUrl: img }, cfg)));
+      // Read first, structure second. Transcription is a small, text-only job;
+      // asking for structured JSON with examples straight off the picture is
+      // what used to overflow the reply and come back unparsable.
+      const lines: string[] = [];
+      for (let i = 0; i < images.length; i++) {
+        setStage(
+          images.length > 1 ? `读图 ${i + 1} / ${images.length}` : "读图中"
+        );
+        lines.push(await aiImageToText(images[i], cfg));
+        // Show each page as it lands, so a failure on the second photo still
+        // leaves the first one's words usable.
+        transcribed = lines.join("\n");
+        setText(transcribed);
       }
-      if (!all.length) {
-        setError("这张图没读出词条");
+      const raw = transcribed;
+
+      setStage("整理中");
+      const out = await aiStructure(
+        {
+          text: raw,
+          onProgress: (done, total) =>
+            setStage(total > 1 ? `整理中 ${done} / ${total}` : "整理中"),
+        },
+        cfg
+      );
+      if (!out.length) {
+        setError("这张图没读出词条，上面的文字可以手动改");
         return;
       }
       setSkipped(0);
-      await finish(await ensureExamples(all));
+      await finish(await ensureExamples(out));
+      // The transcript stays in the box: if a word came out wrong the fix is
+      // to edit that line and hit 解析, no need to re-run the model.
+      setImages([]);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
+        const msg = err instanceof AiError ? err.message : (err as Error).message;
+        // The words are already in the box by this point; say so, otherwise
+        // the error reads as "nothing worked".
         setError(
-          err instanceof AiError ? err.message : (err as Error).message
+          transcribed
+            ? `${msg}　文字已经读出来了，点「解析」可以直接用，也可以改一下再试。`
+            : msg
         );
       }
     } finally {
       setBusy(null);
+      setStage(null);
     }
   }, [cfg, hasAiKey, images, onOpenSettings, finish, ensureExamples]);
 
@@ -222,6 +255,7 @@ export function ImportPanel({
     setSkipped(0);
     setFill(null);
     setError(null);
+    setStage(null);
     setText("");
     setImages([]);
     setOnlySuspect(false);
@@ -376,6 +410,10 @@ export function ImportPanel({
             )}
             识别图片 {images.length} 张
           </button>
+        )}
+
+        {stage && (
+          <span className="text-[12px] tabular-nums text-zinc-500">{stage}</span>
         )}
       </div>
 

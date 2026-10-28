@@ -1,6 +1,11 @@
 import { splitMora } from "./pitch";
 import { splitAnnotated } from "./ruby";
-import { asPos, type VocabExample, type WordDraft } from "./types";
+import {
+  asPos,
+  BLANK_CELL,
+  type VocabExample,
+  type WordDraft,
+} from "./types";
 
 export interface AiConfig {
   key: string;
@@ -31,7 +36,7 @@ const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 - kana：假名读音，纯平假名或片假名，可含「ー」「・」。必填，不能为空。
 - kanji：汉字写法，含送假名（如「食べる」）。没有汉字时用空字符串。
 - meaning：中文释义。原文是日文解释的，译成中文。
-- pos：词性，只能取 [名] [代] [动1] [动2] [动3] [形1] [形2] [副] [连体] [接续] [感] [数] [助] 之一，判断不了用空字符串。
+- pos：词性，只能取 [名] [代] [动1] [动2] [动3] [形1] [形2] [副] [连体] [接续] [感] [数] [助] [疑] [专] [连] 之一，判断不了用空字符串。
 - pitch：声调，只在原文明确写出数字时填。见下方「声调」一节。
 - examples：例句数组，每个词至少一句。见下方「例句」一节。
 - note：原文的附注、易混提示、记忆点，没有就空字符串。
@@ -109,28 +114,30 @@ async function send(
   return res;
 }
 
-async function chat(
+async function chatRaw(
   cfg: AiConfig,
   messages: ChatMessage[],
-  signal?: AbortSignal
-): Promise<string> {
+  signal?: AbortSignal,
+  opts: { json?: boolean; maxTokens?: number } = {}
+): Promise<{ content: string; truncated: boolean }> {
   const res = await send(
     cfg,
     {
       messages,
       temperature: 0.1,
-      max_tokens: 8000,
-      response_format: { type: "json_object" },
+      max_tokens: opts.maxTokens ?? 8000,
+      ...(opts.json === false ? {} : { response_format: { type: "json_object" } }),
     },
     signal
   );
 
   const data = await res.json();
-  const content = data?.choices?.[0]?.message?.content;
+  const choice = data?.choices?.[0];
+  const content = choice?.message?.content;
   if (typeof content !== "string" || !content.trim()) {
     throw new AiError("模型返回了空内容，重试一次试试");
   }
-  return content;
+  return { content, truncated: choice?.finish_reason === "length" };
 }
 
 export interface ChatTurn {
@@ -199,21 +206,122 @@ export async function chatReply(
   return full;
 }
 
-function pickJson(content: string): unknown {
-  const trimmed = content.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "");
-  try {
-    return JSON.parse(trimmed);
-  } catch {
-    const start = trimmed.indexOf("{");
-    const end = trimmed.lastIndexOf("}");
-    if (start >= 0 && end > start) {
-      try {
-        return JSON.parse(trimmed.slice(start, end + 1));
-      } catch {
-        /* fall through */
-      }
+/**
+ * Close a JSON document that was cut off mid-way: finish the open string, drop
+ * the half-written member, then close every bracket left hanging.
+ */
+function finishDoc(src: string): string {
+  const stack: string[] = [];
+  let inStr = false;
+  let esc = false;
+
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
     }
-    throw new AiError("模型没有返回合法 JSON，重试一次");
+    if (ch === '"') inStr = true;
+    else if (ch === "{" || ch === "[") stack.push(ch);
+    else if (ch === "}" || ch === "]") stack.pop();
+  }
+
+  let out = src;
+  if (esc) out = out.slice(0, -1);
+  if (inStr) out += '"';
+  out = out.replace(/,\s*$/, "");
+  for (let i = stack.length - 1; i >= 0; i--) out += stack[i] === "{" ? "}" : "]";
+  return out;
+}
+
+/**
+ * Parse what can still be parsed. A reply that stops half way is a bad reply,
+ * but the words before the cut are real: try cutting back to each earlier
+ * comma until the remainder is a valid document, longest first.
+ */
+function salvageJson(src: string): unknown {
+  let attempt = src;
+  for (let guard = 0; guard < 200; guard++) {
+    try {
+      return JSON.parse(finishDoc(attempt));
+    } catch {
+      const cut = attempt.lastIndexOf(",");
+      if (cut <= 0) break;
+      attempt = attempt.slice(0, cut);
+    }
+  }
+  throw new AiError("模型没有返回合法 JSON，重试一次");
+}
+
+function pickJson(content: string): unknown {
+  const trimmed = content
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
+  const start = trimmed.indexOf("{");
+  const base = start >= 0 ? trimmed.slice(start) : trimmed;
+  const close = base.lastIndexOf("}");
+  const attempts = [trimmed, base];
+  if (close > 0) attempts.push(base.slice(0, close + 1));
+
+  for (const candidate of attempts) {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      /* try the next shape */
+    }
+  }
+  for (const candidate of attempts) {
+    try {
+      return salvageJson(candidate);
+    } catch {
+      /* keep trying */
+    }
+  }
+  throw new AiError("模型没有返回合法 JSON，重试一次");
+}
+
+/** Errors a retry cannot fix: they come from the key, the account or the URL. */
+function isFatal(err: unknown): boolean {
+  if ((err as Error)?.name === "AbortError") return true;
+  if (!(err instanceof AiError)) return false;
+  return /Key|余额|频繁|接口|跨域|地址/.test(err.message);
+}
+
+/**
+ * Ask for JSON and say whether the reply was cut short, so a caller holding a
+ * long list can split it instead of quietly losing the tail.
+ */
+async function chatJson(
+  cfg: AiConfig,
+  messages: ChatMessage[],
+  signal?: AbortSignal
+): Promise<{ value: unknown; truncated: boolean }> {
+  const first = await chatRaw(cfg, messages, signal);
+  try {
+    return { value: pickJson(first.content), truncated: first.truncated };
+  } catch (err) {
+    if (isFatal(err)) throw err;
+    // The model answered with prose, or stopped mid-object. One blunt reminder
+    // is usually enough; asking the user to click again is worse.
+    const again = await chatRaw(
+      cfg,
+      [
+        ...messages,
+        { role: "user", content: "只输出 JSON 对象本身，不要任何解释。" },
+      ],
+      signal
+    );
+    try {
+      return { value: pickJson(again.content), truncated: again.truncated };
+    } catch {
+      throw first.truncated
+        ? new AiError("输出太长被截断了。一次少放一点内容再试。")
+        : new AiError("模型没有返回合法 JSON，再点一次试试");
+    }
   }
 }
 
@@ -259,6 +367,7 @@ export function normalizeDrafts(raw: unknown): WordDraft[] {
 
     let kana = str(r.kana);
     let kanji = str(r.kanji);
+    if (BLANK_CELL.test(kanji)) kanji = "";
     if (!kana) continue;
 
     // If the model put the written form in kana, swap instead of discarding.
@@ -298,7 +407,7 @@ export function normalizeDrafts(raw: unknown): WordDraft[] {
   return out;
 }
 
-const BATCH_LINES = 60;
+const BATCH_LINES = 40;
 
 function chunkLines(raw: string, size: number): string[] {
   const lines = raw.split(/\r?\n/).filter((l) => l.trim());
@@ -309,9 +418,80 @@ function chunkLines(raw: string, size: number): string[] {
   return batches.length ? batches : [raw];
 }
 
+const OCR_SYSTEM = `你是日语单词表转录工具。只把图片里的词条逐行抄成文本，不解释、不整理、不补全、不写例句。`;
+
+const OCR_SPEC = `图片是一张日语单词表（教材单词表、截图、拍照、扫描都算），常见的是《新版中日交流标准日本语》，多为两栏排版。
+
+把表里的词条一行一个抄出来，不要 JSON、不要例句、不要解释、不要编号、不要表头。
+
+每行格式（字段之间用两个空格分开，四格都要有，不许省略）：
+假名  汉字  [词性]  释义
+
+- 没有汉字（外来语、副词、感叹词等）时，汉字这一格写「—」，例如：シーズン  —  [名]  季节
+- 汉字带送假名，照表里的写法抄：もみじ 抄成「紅葉」，たべる 抄成「食べる」。
+- 词性抄括号里的字：名、代、动1、动2、动3、形1、形2、副、连体、接续、感、数、助，以及「疑」「专」「连」这类缩写，照原样抄。
+- 释义抄中文，多个义项用「，」连起来。
+
+排版与干扰：
+- 多栏时先读左栏从上到下，读完再读右栏从上到下，不要左右交替。
+- 假名上方或下方的短线、折线是音调记号，是图形，不要抄成「ー」或任何字符，也不要据此写数字。
+- 页码、栏目标题、装饰横线不要抄。
+
+只输出这些行，不要别的话。`;
+
+/**
+ * Read a photo of a word list into plain lines.
+ *
+ * One shot — "look at this table and give me 50 words of JSON with example
+ * sentences and furigana" — is where recognition used to fail: the reply is
+ * long enough to get cut off, and a cut-off JSON parse error tells the user
+ * nothing. Transcribing is a much smaller job than structuring, and the text
+ * it returns is the same shape as something pasted by hand, so it then flows
+ * through the path that is already batched and proven.
+ */
+export async function aiImageToText(
+  dataUrl: string,
+  cfg: AiConfig,
+  signal?: AbortSignal
+): Promise<string> {
+  const { content, truncated } = await chatRaw(
+    cfg,
+    [
+      { role: "system", content: OCR_SYSTEM },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: OCR_SPEC },
+          { type: "image_url", image_url: { url: dataUrl } },
+        ],
+      },
+    ],
+    signal,
+    { json: false, maxTokens: 4000 }
+  );
+
+  const lines = content
+    .replace(/```[a-z]*\n?/gi, "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    // A line with no kana is the model talking, not a word from the table.
+    .filter(
+      (l) =>
+        /[\u3040-\u30ff]/.test(l) ||
+        !/^(以下|下面|这是|转录|识别|抱歉|很抱歉|对不起)/.test(l)
+    );
+
+  const kana = lines.filter((l) => /[\u3040-\u30ff]/.test(l)).length;
+  if (!kana) throw new AiError("没读出日文。图太糊或者不是单词表？");
+  if (truncated) {
+    throw new AiError("图里的词太多，读到一半就截断了。分两张图识别。");
+  }
+  return lines.join("\n");
+}
+
 export interface StructureOptions {
   text?: string;
-  imageDataUrl?: string;
   onProgress?: (done: number, total: number) => void;
   signal?: AbortSignal;
 }
@@ -322,58 +502,56 @@ export async function aiStructure(
 ): Promise<WordDraft[]> {
   const instruction = `${FIELD_SPEC}\n\n把下面的日语单词表转成 JSON 对象。`;
 
-  // Image path: one request, model reads the picture directly.
-  if (opts.imageDataUrl) {
-    const content = await chat(
-      cfg,
-      [
-        { role: "system", content: SYSTEM },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `图片是一张日语单词表（截图、拍照或扫描件都算），常见的是《新版中日交流标准日本语》的单词表。
-
-这类表的一个特点：假名上方画着音调折线。折线是图形，不是文字——
-- 不要把折线读成长音符「ー」、片假名「へ」「ノ」或任何字符；
-- 不要把折线连成的起伏当作声调数字，pitch 一律填 null；
-- 只转录折线、圆圈数字之外的正文。
-
-先准确识别图中的文字，再按规则结构化。识别不清的字符不要猜：该字段留空字符串，并在 note 里写「识别不清」。
-词性如果印成下划线加小字（如「名」「动1」），照抄即可。
-
-${instruction}`,
-            },
-            { type: "image_url", image_url: { url: opts.imageDataUrl } },
-          ],
-        },
-      ],
-      opts.signal
-    );
-    opts.onProgress?.(1, 1);
-    return normalizeDrafts(pickJson(content));
-  }
-
   const raw = (opts.text ?? "").trim();
   if (!raw) throw new AiError("没有可整理的内容");
 
   const batches = chunkLines(raw, BATCH_LINES);
   const all: WordDraft[] = [];
-  for (let i = 0; i < batches.length; i++) {
-    const content = await chat(
-      cfg,
-      [
-        { role: "system", content: SYSTEM },
-        {
-          role: "user",
-          content: `${instruction}\n\n原文：\n"""\n${batches[i]}\n"""`,
-        },
-      ],
-      opts.signal
-    );
-    all.push(...normalizeDrafts(pickJson(content)));
-    opts.onProgress?.(i + 1, batches.length);
+  // A batch that came back cut short is retried as two smaller ones rather
+  // than accepted minus its tail.
+  const queue = batches.map((text) => ({ text, depth: 0 }));
+  let done = 0;
+
+  while (queue.length) {
+    const batch = queue.shift()!;
+    try {
+      const { value, truncated } = await chatJson(
+        cfg,
+        [
+          { role: "system", content: SYSTEM },
+          {
+            role: "user",
+            content: `${instruction}\n\n原文：\n"""\n${batch.text}\n"""`,
+          },
+        ],
+        opts.signal
+      );
+      const lines = batch.text.split("\n").length;
+      if (truncated && lines > 6 && batch.depth < 3) {
+        const parts = batch.text.split("\n");
+        const mid = Math.ceil(parts.length / 2);
+        queue.unshift(
+          { text: parts.slice(mid).join("\n"), depth: batch.depth + 1 },
+          { text: parts.slice(0, mid).join("\n"), depth: batch.depth + 1 }
+        );
+        continue;
+      }
+      all.push(...normalizeDrafts(value));
+      done += 1;
+      opts.onProgress?.(done, done + queue.length);
+    } catch (err) {
+      const parts = batch.text.split("\n");
+      // A hard failure gets exactly one second chance with less to chew on.
+      if (!isFatal(err) && parts.length > 20 && batch.depth === 0) {
+        const mid = Math.ceil(parts.length / 2);
+        queue.unshift(
+          { text: parts.slice(mid).join("\n"), depth: 1 },
+          { text: parts.slice(0, mid).join("\n"), depth: 1 }
+        );
+        continue;
+      }
+      throw err;
+    }
   }
   return all;
 }
@@ -416,12 +594,17 @@ export async function aiFillExamples(
       )
       .join("\n");
 
-    const content = await chat(cfg, [
-      { role: "system", content: SYSTEM },
-      { role: "user", content: `${EXAMPLE_SPEC}\n\n单词表：\n${list}` },
-    ]);
-
-    const payload = pickJson(content) as { sentences?: unknown };
+    // One bad batch should not throw away the sentences already written.
+    let payload: { sentences?: unknown } | null = null;
+    try {
+      const res = await chatJson(cfg, [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: `${EXAMPLE_SPEC}\n\n单词表：\n${list}` },
+      ]);
+      payload = res.value as { sentences?: unknown };
+    } catch (err) {
+      if (isFatal(err)) throw err;
+    }
     if (Array.isArray(payload?.sentences)) {
       for (const item of payload.sentences) {
         const row = item as Record<string, unknown>;
@@ -463,11 +646,16 @@ export async function aiAnnotate(
   for (let start = 0; start < sentences.length; start += CHUNK) {
     const slice = sentences.slice(start, start + CHUNK);
     const list = slice.map((s, k) => `${k + 1}. ${s}`).join("\n");
-    const content = await chat(cfg, [
-      { role: "system", content: SYSTEM },
-      { role: "user", content: `${READINGS_SPEC}\n\n句子：\n${list}` },
-    ]);
-    const payload = pickJson(content) as { readings?: unknown };
+    let payload: { readings?: unknown } | null = null;
+    try {
+      const res = await chatJson(cfg, [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: `${READINGS_SPEC}\n\n句子：\n${list}` },
+      ]);
+      payload = res.value as { readings?: unknown };
+    } catch (err) {
+      if (isFatal(err)) throw err;
+    }
     if (!Array.isArray(payload?.readings)) continue;
     for (const item of payload.readings) {
       const row = item as Record<string, unknown>;
