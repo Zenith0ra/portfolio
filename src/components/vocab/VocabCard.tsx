@@ -1,6 +1,7 @@
 "use client";
 
 import { Volume2 } from "lucide-react";
+import { Furigana } from "./Furigana";
 import { PitchKana } from "./PitchMark";
 import type { CardMode, VocabWord } from "@/lib/vocab/types";
 
@@ -143,7 +144,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
         </div>
 
         {word.examples.length > 0 && (
-          <div className="mt-3.5 space-y-2.5">
+          <div className="mt-3.5 space-y-3.5">
             {word.examples.map((ex, i) => (
               <div key={i} className="border-l border-purple-400/20 pl-3">
                 <button
@@ -152,10 +153,10 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
                     e.stopPropagation();
                     onSpeak(ex.jp, 0.85);
                   }}
-                  className="block text-left text-[17px] leading-relaxed text-zinc-300 transition-colors hover:text-white"
+                  className="block text-left text-[17px] leading-[2] text-zinc-300 transition-colors hover:text-white"
                   style={{ fontFamily: JP_FONT }}
                 >
-                  {ex.jp}
+                  <Furigana text={ex.jp} ruby={ex.ruby} size={17} />
                 </button>
                 {ex.cn && (
                   <div className="mt-1 text-[14.5px] leading-relaxed text-zinc-500">

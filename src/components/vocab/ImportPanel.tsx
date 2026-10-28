@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import {
   AiError,
+  aiAnnotateDrafts,
+  aiFillExamples,
   imageToDataUrl,
   aiStructure,
   type AiConfig,
@@ -29,7 +31,7 @@ interface Props {
   onCancel?: () => void;
 }
 
-type Busy = "parse" | "ai" | "image" | null;
+type Busy = "parse" | "ai" | "image" | "examples" | null;
 
 const JP =
   '"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif';
@@ -54,7 +56,6 @@ export function ImportPanel({
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
-  const [withExamples, setWithExamples] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [onlySuspect, setOnlySuspect] = useState(false);
   /** Rows the user has looked at and declared fine; the dictionary just lacks them. */
@@ -102,6 +103,26 @@ export function ImportPanel({
     [drafts, fill]
   );
 
+  /** Every word gets a sentence: fill the gaps and read the kanji aloud. */
+  const ensureExamples = useCallback(
+    async (list: WordDraft[]) => {
+      if (!cfg.key.trim()) return list;
+      if (!list.some((d) => d.examples.length === 0 || d.examples.some((e) => !e.ruby))) {
+        return list;
+      }
+      setBusy("examples");
+      try {
+        return await aiAnnotateDrafts(await aiFillExamples(list, cfg), cfg);
+      } catch {
+        /* the words themselves are fine; sentences are the bonus half */
+        return list;
+      } finally {
+        setBusy(null);
+      }
+    },
+    [cfg]
+  );
+
   const runLocal = useCallback(async () => {
     setError(null);
     const out = parseWordList(text);
@@ -111,8 +132,9 @@ export function ImportPanel({
       return;
     }
     setSkipped(out.skipped);
-    await finish(out.words);
-  }, [text, finish]);
+    // The parser reads structure only, so the sentences come after it.
+    await finish(await ensureExamples(out.words));
+  }, [text, finish, ensureExamples]);
 
   const runAi = useCallback(async () => {
     if (!hasAiKey) {
@@ -123,13 +145,13 @@ export function ImportPanel({
     setError(null);
     setBusy("ai");
     try {
-      const out = await aiStructure({ text, withExamples }, cfg);
+      const out = await aiStructure({ text }, cfg);
       if (!out.length) {
         setError("AI 没有返回可用词条，检查一下原文");
         return;
       }
       setSkipped(0);
-      await finish(out);
+      await finish(await ensureExamples(out));
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         setError(
@@ -139,7 +161,7 @@ export function ImportPanel({
     } finally {
       setBusy(null);
     }
-  }, [cfg, hasAiKey, text, withExamples, onOpenSettings, finish]);
+  }, [cfg, hasAiKey, text, onOpenSettings, finish, ensureExamples]);
 
   const runImages = useCallback(async () => {
     if (!hasAiKey) {
@@ -153,14 +175,14 @@ export function ImportPanel({
     try {
       const all: WordDraft[] = [];
       for (const img of images) {
-        all.push(...(await aiStructure({ imageDataUrl: img, withExamples }, cfg)));
+        all.push(...(await aiStructure({ imageDataUrl: img }, cfg)));
       }
       if (!all.length) {
         setError("这张图没读出词条");
         return;
       }
       setSkipped(0);
-      await finish(all);
+      await finish(await ensureExamples(all));
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         setError(
@@ -170,7 +192,7 @@ export function ImportPanel({
     } finally {
       setBusy(null);
     }
-  }, [cfg, hasAiKey, images, withExamples, onOpenSettings, finish]);
+  }, [cfg, hasAiKey, images, onOpenSettings, finish, ensureExamples]);
 
   const handleFiles = useCallback(async (files: FileList) => {
     const imgFiles: File[] = [];
@@ -321,7 +343,10 @@ export function ImportPanel({
           disabled={!text.trim() || busy !== null}
           className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-[13px] text-zinc-300 transition-colors hover:border-purple-400/40 hover:text-white disabled:opacity-40"
         >
-          {busy === "parse" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {busy === "parse" ||
+          busy === "examples" ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : null}
           解析
         </button>
 
@@ -352,16 +377,6 @@ export function ImportPanel({
             识别图片 {images.length} 张
           </button>
         )}
-
-        <label className="ml-auto flex cursor-pointer items-center gap-1.5 text-[12px] text-zinc-500">
-          <input
-            type="checkbox"
-            checked={withExamples}
-            onChange={(e) => setWithExamples(e.target.checked)}
-            className="h-3 w-3 accent-purple-500"
-          />
-          补例句
-        </label>
       </div>
 
       <input

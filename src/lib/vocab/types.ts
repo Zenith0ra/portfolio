@@ -4,6 +4,8 @@ export type CardMode = "cn" | "kanji" | "kana" | "audio";
 export interface VocabExample {
   jp: string;
   cn: string;
+  /** jp with readings inline: 今日[きょう]は雨[あめ]です */
+  ruby?: string;
 }
 
 /** Fields that describe the word itself. */

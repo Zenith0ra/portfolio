@@ -21,7 +21,10 @@ function revive(w: Record<string, unknown>): VocabWord {
       ? w.examples
           .map((e) => {
             const ex = (e ?? {}) as Record<string, unknown>;
-            return { jp: str(ex.jp), cn: str(ex.cn) };
+            const ruby = str(ex.ruby);
+            return ruby
+              ? { jp: str(ex.jp), cn: str(ex.cn), ruby }
+              : { jp: str(ex.jp), cn: str(ex.cn) };
           })
           .filter((e) => e.jp)
       : [],

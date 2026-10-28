@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check, Pencil, Search, Trash2, Volume2, X } from "lucide-react";
-import type { VocabWord } from "@/lib/vocab/types";
+import { splitAnnotated } from "@/lib/vocab/ruby";
+import type { VocabExample, VocabWord } from "@/lib/vocab/types";
 
 const JP =
   '"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif';
@@ -25,8 +26,9 @@ function Editor({
   onCancel: () => void;
 }) {
   const [draft, setDraft] = useState(word);
+  // Readings are edited as they are shown: 今日[きょう]は雨[あめ]です
   const [exampleText, setExampleText] = useState(
-    word.examples.map((e) => `${e.jp} | ${e.cn}`).join("\n")
+    word.examples.map((e) => `${e.ruby || e.jp} | ${e.cn}`).join("\n")
   );
 
   const field = (label: string, key: keyof VocabWord, placeholder = "") => (
@@ -88,9 +90,10 @@ function Editor({
           onClick={() => {
             const examples = exampleText
               .split("\n")
-              .map((line) => {
-                const [jp, cn] = line.split("|");
-                return { jp: (jp ?? "").trim(), cn: (cn ?? "").trim() };
+              .map((line): VocabExample => {
+                const [rawJp, cn] = line.split("|");
+                const { jp, ruby } = splitAnnotated((rawJp ?? "").trim());
+                return ruby ? { jp, cn: (cn ?? "").trim(), ruby } : { jp, cn: (cn ?? "").trim() };
               })
               .filter((e) => e.jp);
             onSave({ ...draft, examples });

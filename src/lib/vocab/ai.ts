@@ -1,4 +1,5 @@
 import { splitMora } from "./pitch";
+import { splitAnnotated } from "./ruby";
 import { asPos, type VocabExample, type WordDraft } from "./types";
 
 export interface AiConfig {
@@ -15,15 +16,16 @@ export const DEFAULT_AI: AiConfig = {
 
 export const MODEL_HINTS = ["deepseek-flash", "deepseek-chat", "deepseek-reasoner"];
 
-const SYSTEM = `你是日语词汇数据结构化工具。唯一任务是把用户提供的日语单词表整理成 JSON。
-你不创作、不补充、不猜测原文里没有的信息。`;
+const SYSTEM = `你是日语词汇数据结构化工具。任务是把用户提供的日语单词表整理成 JSON。
+除例句之外，你不创作、不补充、不猜测原文里没有的信息。例句是唯一允许你编写的字段。`;
 
-/** Same role, plus the one thing we do allow it to write from scratch. */
-const SYSTEM_WITH_EXAMPLES = `你是日语词汇数据结构化工具。唯一任务是把用户提供的日语单词表整理成 JSON。
-除了例句之外，你不创作、不补充、不猜测原文里没有的信息。例句是唯一允许你编写的字段。`;
+/** Shared by every path that has to produce a kana reading for a sentence. */
+const RUBY_RULE = `- ruby：jp 的注音版。每一串连续的汉字后面紧跟方括号，括号里写这串汉字的平假名读音，假名和标点原样保留。
+  例：「今日は雨です」→「今日[きょう]は雨[あめ]です」；「学校へ行きます」→「学校[がっこう]へ行[い]きます」；「兄弟が二人います」→「兄弟[きょうだい]が二人[ふたり]います」。
+  送假名不括进括号，只括汉字部分；一个汉字一个括号，不要整句连注。`;
 
 const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
-{"words":[{"kana":"","kanji":"","meaning":"","pos":"","pitch":null,"examples":[{"jp":"","cn":""}],"note":""}]}
+{"words":[{"kana":"","kanji":"","meaning":"","pos":"","pitch":null,"examples":[{"jp":"","ruby":"","cn":""}],"note":""}]}
 
 字段规则：
 - kana：假名读音，纯平假名或片假名，可含「ー」「・」。必填，不能为空。
@@ -31,8 +33,15 @@ const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 - meaning：中文释义。原文是日文解释的，译成中文。
 - pos：词性，只能取 [名] [代] [动1] [动2] [动3] [形1] [形2] [副] [连体] [接续] [感] [数] [助] 之一，判断不了用空字符串。
 - pitch：声调，只在原文明确写出数字时填。见下方「声调」一节。
-- examples：例句数组。${"@EXAMPLES@"}
+- examples：例句数组，每个词至少一句。见下方「例句」一节。
 - note：原文的附注、易混提示、记忆点，没有就空字符串。
+
+例句：
+- 原文给了例句就照抄，同样要补 ruby。
+- 原文没有就自己写一句：8～14 个假名长度、日常口语、只用这个词的常见搭配。宁可句子朴素，也不要生造搭配或用错的助词。
+- jp：句子本身，只含日文和标点，**不要出现方括号**。
+- cn：中文翻译。
+${RUBY_RULE}
 
 声调（重要）：
 - 只有原文明写数字时才填，例如词后带圈数字 ⓪①②③④、或方括号里的 [0] [1] [2]、或表格里的「声调」列。
@@ -45,11 +54,6 @@ const FIELD_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
 2. 折线不是声调数据，不要转换、不要推测。
 3. 词条数量必须与原文一致，不合并、不遗漏、不排序。
 4. 只输出 JSON 对象本身。`;
-
-/** Rule for the `examples` field, which flips depending on the checkbox. */
-const EXAMPLES_COPY = "原文给了例句就照抄，没有就填空数组。";
-const EXAMPLES_WRITE =
-  "原文给了例句就照抄。没有就给每个词补一句：8～14 个假名长度、日常口语、只用这个词的常见搭配，cn 写中文翻译。宁可句子朴素，也不要生造搭配或用错的助词。";
 
 export class AiError extends Error {}
 
@@ -218,6 +222,25 @@ function str(v: unknown): string {
 }
 
 /**
+ * One example, whether the reading arrived in its own field or was written
+ * into the sentence. A reading that does not match its sentence is dropped
+ * rather than drawn over the wrong characters.
+ */
+export function toExample(raw: unknown): VocabExample {
+  const ex = (raw ?? {}) as Record<string, unknown>;
+  const clean = splitAnnotated(str(ex.jp));
+  let ruby = clean.ruby;
+  const given = str(ex.ruby);
+  if (given) {
+    const parsed = splitAnnotated(given);
+    if (parsed.jp === clean.jp) ruby = parsed.ruby;
+  }
+  const out: VocabExample = { jp: clean.jp, cn: str(ex.cn) };
+  if (ruby) out.ruby = ruby;
+  return out;
+}
+
+/**
  * Turn whatever the model produced into rows we trust enough to show.
  * Anything structurally impossible is dropped rather than repaired silently.
  */
@@ -250,10 +273,7 @@ export function normalizeDrafts(raw: unknown): WordDraft[] {
 
     const examples: VocabExample[] = Array.isArray(r.examples)
       ? r.examples
-          .map((e) => {
-            const ex = (e ?? {}) as Record<string, unknown>;
-            return { jp: str(ex.jp), cn: str(ex.cn) };
-          })
+          .map((e) => toExample(e))
           .filter((e) => e.jp.length > 0)
       : [];
 
@@ -292,7 +312,6 @@ function chunkLines(raw: string, size: number): string[] {
 export interface StructureOptions {
   text?: string;
   imageDataUrl?: string;
-  withExamples?: boolean;
   onProgress?: (done: number, total: number) => void;
   signal?: AbortSignal;
 }
@@ -301,19 +320,14 @@ export async function aiStructure(
   opts: StructureOptions,
   cfg: AiConfig
 ): Promise<WordDraft[]> {
-  const spec = FIELD_SPEC.replace(
-    "@EXAMPLES@",
-    opts.withExamples ? EXAMPLES_WRITE : EXAMPLES_COPY
-  );
-  const system = opts.withExamples ? SYSTEM_WITH_EXAMPLES : SYSTEM;
-  const instruction = `${spec}\n\n把下面的日语单词表转成 JSON 对象。`;
+  const instruction = `${FIELD_SPEC}\n\n把下面的日语单词表转成 JSON 对象。`;
 
   // Image path: one request, model reads the picture directly.
   if (opts.imageDataUrl) {
     const content = await chat(
       cfg,
       [
-        { role: "system", content: system },
+        { role: "system", content: SYSTEM },
         {
           role: "user",
           content: [
@@ -350,7 +364,7 @@ ${instruction}`,
     const content = await chat(
       cfg,
       [
-        { role: "system", content: system },
+        { role: "system", content: SYSTEM },
         {
           role: "user",
           content: `${instruction}\n\n原文：\n"""\n${batches[i]}\n"""`,
@@ -364,8 +378,140 @@ ${instruction}`,
   return all;
 }
 
-/** Downscale before upload: keeps the request small and the text equally readable. */
-export async function imageToDataUrl(file: File, maxSide = 1600): Promise<string> {
+const EXAMPLE_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
+{"sentences":[{"i":1,"jp":"","ruby":"","cn":""}]}
+
+规则：
+- i：对应下面列表里的序号，原样照抄，不要重排。
+- jp：为这个词写一句例句：8～14 个假名长度、日常口语、只用这个词的常见搭配。宁可句子朴素，也不要生造搭配或用错的助词。
+- cn：中文翻译。
+${RUBY_RULE}
+- 列表里有几个词就返回几条，不合并、不遗漏。只输出 JSON 对象本身。`;
+
+const EXAMPLE_CHUNK = 40;
+
+/**
+ * Examples for words that arrived without any — the local parser never writes
+ * prose, so this is what makes "every word has an example" true on that path.
+ */
+export async function aiFillExamples(
+  drafts: WordDraft[],
+  cfg: AiConfig,
+  onProgress?: (done: number, total: number) => void
+): Promise<WordDraft[]> {
+  const out = drafts.map((d) => ({ ...d }));
+  const todo = out
+    .map((d, i) => ({ d, i }))
+    .filter((r) => r.d.examples.length === 0);
+  if (!todo.length) return out;
+
+  for (let start = 0; start < todo.length; start += EXAMPLE_CHUNK) {
+    const slice = todo.slice(start, start + EXAMPLE_CHUNK);
+    const list = slice
+      .map(
+        (r, k) =>
+          `${k + 1}. ${r.d.kanji || r.d.kana}（${r.d.kana}）${
+            r.d.pos ? `[${r.d.pos}]` : ""
+          } ${r.d.meaning}`
+      )
+      .join("\n");
+
+    const content = await chat(cfg, [
+      { role: "system", content: SYSTEM },
+      { role: "user", content: `${EXAMPLE_SPEC}\n\n单词表：\n${list}` },
+    ]);
+
+    const payload = pickJson(content) as { sentences?: unknown };
+    if (Array.isArray(payload?.sentences)) {
+      for (const item of payload.sentences) {
+        const row = item as Record<string, unknown>;
+        const n = Number(row.i);
+        const target = slice[Math.round(n) - 1];
+        if (!Number.isFinite(n) || !target) continue;
+        const ex = toExample(row);
+        // `i` is the model's own numbering; only take it if it points at a
+        // word that had nothing, so a miscount cannot overwrite real data.
+        if (ex.jp && out[target.i].examples.length === 0) {
+          out[target.i].examples = [ex];
+        }
+      }
+    }
+    onProgress?.(Math.min(start + EXAMPLE_CHUNK, todo.length), todo.length);
+  }
+  return out;
+}
+
+const READINGS_SPEC = `输出格式（严格 JSON，不要 markdown 代码块）：
+{"readings":[{"i":1,"ruby":""}]}
+
+规则：
+- i：对应下面句子的序号，原样照抄。
+- ruby：把该句的汉字加上方括号注音，汉字以外的字符（假名、标点、数字）完全照抄，一个字都不要改、不要增删。
+${RUBY_RULE}
+- 句子有几条就返回几条。只输出 JSON 对象本身。`;
+
+/**
+ * Add readings to sentences that were stored before annotations existed.
+ * Returns one entry per input, empty string where no reading came back.
+ */
+export async function aiAnnotate(
+  sentences: string[],
+  cfg: AiConfig
+): Promise<string[]> {
+  const out = sentences.map(() => "");
+  const CHUNK = 40;
+  for (let start = 0; start < sentences.length; start += CHUNK) {
+    const slice = sentences.slice(start, start + CHUNK);
+    const list = slice.map((s, k) => `${k + 1}. ${s}`).join("\n");
+    const content = await chat(cfg, [
+      { role: "system", content: SYSTEM },
+      { role: "user", content: `${READINGS_SPEC}\n\n句子：\n${list}` },
+    ]);
+    const payload = pickJson(content) as { readings?: unknown };
+    if (!Array.isArray(payload?.readings)) continue;
+    for (const item of payload.readings) {
+      const row = item as Record<string, unknown>;
+      const n = Math.round(Number(row.i));
+      const idx = start + n - 1;
+      if (!Number.isFinite(n) || idx < start || idx >= start + slice.length) continue;
+      const parsed = splitAnnotated(str(row.ruby));
+      // The reading is only usable if the model kept the sentence intact.
+      if (parsed.ruby && parsed.jp === sentences[idx]) out[idx] = parsed.ruby;
+    }
+  }
+  return out;
+}
+
+/**
+ * Add readings to every example that lacks them. Sentences are deduplicated,
+ * so a repeated sentence costs one line, and untouched items keep identity.
+ */
+export async function aiAnnotateDrafts<T extends { examples: VocabExample[] }>(
+  items: T[],
+  cfg: AiConfig
+): Promise<T[]> {
+  const sentences = Array.from(
+    new Set(items.flatMap((w) => w.examples.filter((e) => !e.ruby).map((e) => e.jp)))
+  );
+  if (!sentences.length) return items;
+
+  const readings = await aiAnnotate(sentences, cfg);
+  const got = new Map<string, string>();
+  sentences.forEach((s, i) => {
+    if (readings[i]) got.set(s, readings[i]);
+  });
+  if (!got.size) return items;
+
+  return items.map((w) => ({
+    ...w,
+    examples: w.examples.map((e) => {
+      const ruby = e.ruby ? undefined : got.get(e.jp);
+      return ruby ? { ...e, ruby } : e;
+    }),
+  }));
+}
+
+/** Downscale before upload: keeps the request small and the text equally readable. */export async function imageToDataUrl(file: File, maxSide = 1600): Promise<string> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const w = Math.round(bitmap.width * scale);

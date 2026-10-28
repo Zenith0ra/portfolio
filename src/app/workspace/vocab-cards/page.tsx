@@ -18,7 +18,7 @@ import { AiChat } from "@/components/vocab/AiChat";
 import { SettingsDialog } from "@/components/vocab/SettingsDialog";
 import { VocabCard } from "@/components/vocab/VocabCard";
 import { loadAccent, lookupPitch } from "@/lib/vocab/accent";
-import { DEFAULT_AI, type AiConfig } from "@/lib/vocab/ai";
+import { DEFAULT_AI, aiAnnotateDrafts, type AiConfig } from "@/lib/vocab/ai";
 import { wordKey } from "@/lib/vocab/parse";
 import { primeVoices, speakJa } from "@/lib/vocab/speech";
 import {
@@ -89,6 +89,24 @@ export default function VocabCardsPage() {
       alive = false;
     };
   }, [hydrated, words]);
+
+  // Sentences stored before readings existed get them once, quietly.
+  const rubyFilled = useRef(false);
+  useEffect(() => {
+    if (!hydrated || rubyFilled.current) return;
+    if (!cfg.key.trim()) return;
+    if (!words.some((w) => w.examples.some((e) => !e.ruby))) return;
+    rubyFilled.current = true;
+    let alive = true;
+    aiAnnotateDrafts(words, cfg)
+      .then((next) => {
+        if (alive) setWords(next);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [hydrated, cfg, words]);
 
   const total = words.length;
   const current = useMemo(() => words[cursor] ?? null, [words, cursor]);
