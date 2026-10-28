@@ -6,7 +6,6 @@ import {
   Boxes,
   GraduationCap,
   Award,
-  Heart,
   Code,
   Code2,
   BookOpen,
@@ -14,12 +13,6 @@ import {
   MapPin,
   Calendar,
   Mail,
-  Palette,
-  Brain,
-  Github,
-  Globe,
-  FolderGit2,
-  HandHeart,
   MessageCircle,
   Hash,
 } from "lucide-react";
@@ -78,58 +71,6 @@ const awards = [
     year: "2023",
     org: "Henan Province",
   },
-];
-
-const interests = [
-  { name: "Graphics", icon: Palette, color: "text-purple-400" },
-  { name: "AI", icon: Brain, color: "text-cyan-400" },
-  { name: "Open Source", icon: Github, color: "text-orange-400" },
-  { name: "Web Dev", icon: Globe, color: "text-green-400" },
-];
-
-const skills = {
-  languages: ["C/C++", "Python", "Rust", "TypeScript", "HTML/CSS"],
-  frameworks: ["React", "Next.js", "Django", "Node.js"],
-  tools: ["Git", "VS Code", "Linux", "WSL", "Docker"],
-  domains: ["Algorithm Design", "AI", "Web Development"],
-};
-
-const projects = [
-  {
-    name: "Personal Tech Blog",
-    tech: "blog.houlinzhi.com",
-    description: "个人技术博客，记录学习笔记与思考。",
-    year: "2024",
-  },
-  {
-    name: "Personal Website",
-    tech: "houlinzhi.com",
-    description: "个人网站与在线工具集。",
-    year: "2025",
-  },
-  {
-    name: "Open Source",
-    tech: "github.com/Zenith0ra",
-    description: "在 GitHub 上参与开源项目。",
-    year: "2024 - present",
-  },
-];
-
-const volunteer = [
-  { name: "2025校友返校日志愿服务", date: "2025-05" },
-  { name: "计算机系第21届钟士模杯田径运动会", date: "2025-05" },
-  { name: "2024-2025春季学期日常讲解活动", date: "2025-05" },
-  { name: "清华大学第23届情系母校志愿活动", date: "2025-03" },
-  { name: "第十期清年爱劳动", date: "2025-03" },
-  { name: "2024秋季学期Program Buddy活动", date: "2025-02" },
-  { name: "2024秋季学期Inspire启志书信活动", date: "2025-02" },
-  { name: "计算机系校庆校友纪念活动现场服务", date: "2025-01" },
-  { name: "2024年高考招生志愿者", date: "2024-09" },
-  { name: "清华大学2024年马约翰杯田径运动会", date: "2024-05" },
-  { name: "计算机系2024钟士模杯运动会", date: "2024-04" },
-  { name: "清华大学第22届情系母校志愿活动", date: "2024-03" },
-  { name: "清年爱劳动", date: "2024-01" },
-  { name: "计算机系2023年迎新", date: "2023-09" },
 ];
 
 const contacts = [
@@ -293,152 +234,6 @@ export default function Home() {
                     <span>•</span>
                     <span>{award.year}</span>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </BentoCard>
-
-          <BentoCard className="md:col-span-2" delay={4}>
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
-              <Code className="h-5 w-5 text-cyan-400" />
-              Technical Skills
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Languages
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {skills.languages.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-400"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Frameworks
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {skills.frameworks.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-xs text-purple-400"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Tools
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {skills.tools.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs text-orange-400"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Domains
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {skills.domains.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs text-green-400"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </BentoCard>
-
-          <BentoCard className="md:col-span-1" delay={5}>
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
-              <Heart className="h-5 w-5 text-purple-400" />
-              Interests
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {interests.map((interest, index) => (
-                <motion.div
-                  key={interest.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                  className="flex flex-col items-center rounded-lg border border-white/5 bg-white/5 p-3 text-center"
-                >
-                  <interest.icon
-                    className={`mb-1.5 h-6 w-6 ${interest.color}`}
-                  />
-                  <span className="text-xs text-zinc-400">{interest.name}</span>
-                </motion.div>
-              ))}
-            </div>
-          </BentoCard>
-
-          <BentoCard className="md:col-span-2" delay={6}>
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
-              <FolderGit2 className="h-5 w-5 text-cyan-400" />
-              Projects
-            </h3>
-            <div className="space-y-3">
-              {projects.map((project, index) => (
-                <motion.div
-                  key={project.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  className="rounded-lg border border-white/5 bg-white/5 p-4"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium text-white">{project.name}</p>
-                      <p className="text-xs text-cyan-400">{project.tech}</p>
-                    </div>
-                    <span className="text-xs text-zinc-500">
-                      {project.year}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm text-zinc-500">
-                    {project.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </BentoCard>
-
-          <BentoCard className="md:col-span-1" delay={7}>
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
-              <HandHeart className="h-5 w-5 text-orange-400" />
-              Volunteer
-            </h3>
-            <div className="space-y-2">
-              {volunteer.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + index * 0.04 }}
-                  className="flex items-center justify-between gap-2 text-sm"
-                >
-                  <span className="text-zinc-400">{item.name}</span>
-                  <span className="flex-shrink-0 text-xs text-zinc-600">
-                    {item.date}
-                  </span>
                 </motion.div>
               ))}
             </div>
