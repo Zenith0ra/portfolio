@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Library } from "@/components/vocab/Library";
 import { ImportPanel } from "@/components/vocab/ImportPanel";
+import { AiChat } from "@/components/vocab/AiChat";
 import { SettingsDialog } from "@/components/vocab/SettingsDialog";
 import { VocabCard } from "@/components/vocab/VocabCard";
 import { loadAccent, lookupPitch } from "@/lib/vocab/accent";
@@ -149,8 +150,12 @@ export default function VocabCardsPage() {
   useEffect(() => {
     if (view !== "review") return;
     function onKey(e: KeyboardEvent) {
-      const tag = (e.target as HTMLElement | null)?.tagName;
+      const el = e.target as HTMLElement | null;
+      const tag = el?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
+      // The chat panel has its own buttons; a stray space there must not flip
+      // the card underneath it.
+      if (el?.closest?.("[data-chat]")) return;
       if (e.code === "Space" || e.code === "Enter" || e.code === "ArrowRight") {
         e.preventDefault();
         if (revealed) advance();
@@ -193,7 +198,7 @@ export default function VocabCardsPage() {
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+      <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6 xl:max-w-5xl">
         <Link
           href="/workspace"
           className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white"
@@ -210,7 +215,7 @@ export default function VocabCardsPage() {
               <>
                 <button
                   onClick={() => setImporting((v) => !v)}
-                  className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-[12px] text-zinc-300 transition-colors hover:border-purple-400/40 hover:text-white"
+                  className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-[13px] text-zinc-300 transition-colors hover:border-purple-400/40 hover:text-white"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   导入
@@ -248,10 +253,10 @@ export default function VocabCardsPage() {
 
           {words.length === 0 && !importing && (
             <div className="rounded-xl border border-dashed border-white/10 px-6 py-16 text-center">
-              <p className="text-[13px] text-zinc-500">还没有单词</p>
+              <p className="text-[14px] text-zinc-500">还没有单词</p>
               <button
                 onClick={() => setImporting(true)}
-                className="mt-4 rounded-md bg-purple-600 px-4 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-purple-500"
+                className="mt-4 rounded-md bg-purple-600 px-4 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-purple-500"
               >
                 导入
               </button>
@@ -264,7 +269,7 @@ export default function VocabCardsPage() {
                 <div className="flex rounded-lg border border-white/10 p-0.5">
                   <button
                     onClick={() => setView("library")}
-                    className={`rounded-md px-3 py-1 text-[12px] transition-colors ${
+                    className={`rounded-md px-3 py-1 text-[13px] transition-colors ${
                       view === "library"
                         ? "bg-white/[0.08] text-white"
                         : "text-zinc-500 hover:text-zinc-300"
@@ -274,7 +279,7 @@ export default function VocabCardsPage() {
                   </button>
                   <button
                     onClick={resumeReview}
-                    className={`rounded-md px-3 py-1 text-[12px] transition-colors ${
+                    className={`rounded-md px-3 py-1 text-[13px] transition-colors ${
                       view === "review"
                         ? "bg-white/[0.08] text-white"
                         : "text-zinc-500 hover:text-zinc-300"
@@ -287,7 +292,7 @@ export default function VocabCardsPage() {
                 {view === "library" && (
                   <button
                     onClick={startReview}
-                    className="ml-auto flex items-center gap-1.5 rounded-md bg-purple-600 px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-purple-500"
+                    className="ml-auto flex items-center gap-1.5 rounded-md bg-purple-600 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-purple-500"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     开始背诵
@@ -308,87 +313,95 @@ export default function VocabCardsPage() {
                   onDeleteMany={removeWords}
                 />
               ) : (
-                <div className="mx-auto max-w-[680px]">
-                  <div className="mb-3 flex items-center gap-2">
-                    <div className="flex rounded-lg border border-white/10 p-0.5">
-                      {MODES.map((m) => (
-                        <button
-                          key={m.id}
-                          onClick={() => setMode(m.id)}
-                          className={`rounded-md px-2.5 py-1 text-[12px] transition-colors ${
-                            mode === m.id
-                              ? "bg-white/[0.08] text-white"
-                              : "text-zinc-500 hover:text-zinc-300"
-                          }`}
-                        >
-                          {m.label}
-                        </button>
-                      ))}
-                    </div>
-                    <span className="ml-auto text-[11px] tabular-nums text-zinc-600">
-                      {finished
-                        ? "完成"
-                        : `${Math.min(cursor + 1, total)} / ${total}`}
-                    </span>
-                  </div>
-
-                  <div className="mb-3 h-[2px] w-full overflow-hidden rounded-full bg-white/[0.06]">
-                    <div
-                      className="h-full rounded-full bg-purple-500/70 transition-[width] duration-300"
-                      style={{
-                        width: `${Math.min(100, (cursor / Math.max(1, total)) * 100)}%`,
-                      }}
-                    />
-                  </div>
-
-                  {finished || !current ? (
-                    <div className="rounded-2xl border border-white/10 bg-[#1e1e1e] px-6 py-14 text-center">
-                      <Check className="mx-auto h-6 w-6 text-emerald-400" />
-                      <div className="mt-5 flex justify-center gap-2">
-                        <button
-                          onClick={startReview}
-                          className="flex items-center gap-1.5 rounded-md bg-purple-600 px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-purple-500"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          再来一遍
-                        </button>
-                        <button
-                          onClick={() => setView("library")}
-                          className="rounded-md border border-white/10 px-3.5 py-1.5 text-[12px] text-zinc-400 transition-colors hover:text-white"
-                        >
-                          回词库
-                        </button>
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="flex rounded-lg border border-white/10 p-0.5">
+                        {MODES.map((m) => (
+                          <button
+                            key={m.id}
+                            onClick={() => setMode(m.id)}
+                            className={`rounded-md px-2.5 py-1 text-[13px] transition-colors ${
+                              mode === m.id
+                                ? "bg-white/[0.08] text-white"
+                                : "text-zinc-500 hover:text-zinc-300"
+                            }`}
+                          >
+                            {m.label}
+                          </button>
+                        ))}
                       </div>
+                      <span className="ml-auto text-[12px] tabular-nums text-zinc-600">
+                        {finished
+                          ? "完成"
+                          : `${Math.min(cursor + 1, total)} / ${total}`}
+                      </span>
                     </div>
-                  ) : (
-                    <>
-                      <VocabCard
-                        word={current}
-                        mode={mode}
-                        revealed={revealed}
-                        onToggle={() => setRevealed((v) => !v)}
-                        onSpeak={handleSpeak}
-                      />
 
-                      {revealed ? (
-                        <button
-                          onClick={advance}
-                          className="mt-3 w-full rounded-lg border border-white/10 bg-[#1e1e1e] py-2.5 text-[13px] text-zinc-300 transition-colors hover:border-purple-400/40 hover:text-white"
-                        >
-                          下一张
-                          <span className="ml-2 text-[10px] text-zinc-700">空格</span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setRevealed(true)}
-                          className="mt-3 w-full rounded-lg border border-white/10 bg-[#1e1e1e] py-2.5 text-[13px] text-zinc-400 transition-colors hover:border-purple-400/40 hover:text-white"
-                        >
-                          揭晓
-                          <span className="ml-2 text-[10px] text-zinc-700">空格</span>
-                        </button>
-                      )}
-                    </>
-                  )}
+                    <div className="mb-3 h-[2px] w-full overflow-hidden rounded-full bg-white/[0.06]">
+                      <div
+                        className="h-full rounded-full bg-purple-500/70 transition-[width] duration-300"
+                        style={{
+                          width: `${Math.min(100, (cursor / Math.max(1, total)) * 100)}%`,
+                        }}
+                      />
+                    </div>
+
+                    {finished || !current ? (
+                      <div className="rounded-2xl border border-white/10 bg-[#1e1e1e] px-6 py-14 text-center">
+                        <Check className="mx-auto h-6 w-6 text-emerald-400" />
+                        <div className="mt-5 flex justify-center gap-2">
+                          <button
+                            onClick={startReview}
+                            className="flex items-center gap-1.5 rounded-md bg-purple-600 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-purple-500"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            再来一遍
+                          </button>
+                          <button
+                            onClick={() => setView("library")}
+                            className="rounded-md border border-white/10 px-3.5 py-1.5 text-[13px] text-zinc-400 transition-colors hover:text-white"
+                          >
+                            回词库
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <VocabCard
+                          word={current}
+                          mode={mode}
+                          revealed={revealed}
+                          onToggle={() => setRevealed((v) => !v)}
+                          onSpeak={handleSpeak}
+                        />
+
+                        {revealed ? (
+                          <button
+                            onClick={advance}
+                            className="mt-3 w-full rounded-lg border border-white/10 bg-[#1e1e1e] py-2.5 text-[14px] text-zinc-300 transition-colors hover:border-purple-400/40 hover:text-white"
+                          >
+                            下一张
+                            <span className="ml-2 text-[11px] text-zinc-700">空格</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setRevealed(true)}
+                            className="mt-3 w-full rounded-lg border border-white/10 bg-[#1e1e1e] py-2.5 text-[14px] text-zinc-400 transition-colors hover:border-purple-400/40 hover:text-white"
+                          >
+                            揭晓
+                            <span className="ml-2 text-[11px] text-zinc-700">空格</span>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  <AiChat
+                    word={current}
+                    cfg={cfg}
+                    onOpenSettings={() => setSettingsOpen(true)}
+                  />
                 </div>
               )}
             </>

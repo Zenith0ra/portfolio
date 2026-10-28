@@ -69,11 +69,11 @@ function endpoint(base: string): string {
   return `${b}/chat/completions`;
 }
 
-async function chat(
+async function send(
   cfg: AiConfig,
-  messages: ChatMessage[],
+  body: Record<string, unknown>,
   signal?: AbortSignal
-): Promise<string> {
+): Promise<Response> {
   if (!cfg.key.trim()) throw new AiError("还没有填写 API Key");
 
   let res: Response;
@@ -84,20 +84,12 @@ async function chat(
         "Content-Type": "application/json",
         Authorization: `Bearer ${cfg.key.trim()}`,
       },
-      body: JSON.stringify({
-        model: cfg.model || DEFAULT_AI.model,
-        messages,
-        temperature: 0.1,
-        max_tokens: 8000,
-        response_format: { type: "json_object" },
-      }),
+      body: JSON.stringify({ model: cfg.model || DEFAULT_AI.model, ...body }),
       signal,
     });
   } catch (err) {
     if ((err as Error)?.name === "AbortError") throw err;
-    throw new AiError(
-      "请求发不出去，可能是网络问题或接口地址不对。也可以换一个支持跨域的接口地址再试。"
-    );
+    throw new AiError("网络不通，或者接口地址不对。也可以换一个支持跨域的地址再试。");
   }
 
   if (!res.ok) {
@@ -110,6 +102,24 @@ async function chat(
       `接口返回 ${res.status}${detail ? `：${detail.slice(0, 180)}` : ""}`
     );
   }
+  return res;
+}
+
+async function chat(
+  cfg: AiConfig,
+  messages: ChatMessage[],
+  signal?: AbortSignal
+): Promise<string> {
+  const res = await send(
+    cfg,
+    {
+      messages,
+      temperature: 0.1,
+      max_tokens: 8000,
+      response_format: { type: "json_object" },
+    },
+    signal
+  );
 
   const data = await res.json();
   const content = data?.choices?.[0]?.message?.content;
@@ -117,6 +127,72 @@ async function chat(
     throw new AiError("模型返回了空内容，重试一次试试");
   }
   return content;
+}
+
+export interface ChatTurn {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Plain-text chat, streamed. `onDelta` gets each new fragment plus the text
+ * assembled so far, so the component never has to rebuild it.
+ */
+export async function chatReply(
+  turns: ChatTurn[],
+  cfg: AiConfig,
+  onDelta: (full: string) => void,
+  signal?: AbortSignal
+): Promise<string> {
+  const res = await send(
+    cfg,
+    { messages: turns, temperature: 0.4, stream: true },
+    signal
+  );
+
+  if (!res.body) {
+    const data = await res.json();
+    const text = data?.choices?.[0]?.message?.content;
+    if (typeof text !== "string") throw new AiError("模型返回了空内容");
+    onDelta(text);
+    return text;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let full = "";
+  let done = false;
+
+  while (!done) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    buffer += decoder.decode(chunk.value, { stream: true });
+
+    let nl: number;
+    while ((nl = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, nl).trim();
+      buffer = buffer.slice(nl + 1);
+      if (!line.startsWith("data:")) continue;
+      const payload = line.slice(5).trim();
+      if (payload === "[DONE]") {
+        done = true;
+        break;
+      }
+      try {
+        const delta = JSON.parse(payload)?.choices?.[0]?.delta?.content;
+        if (typeof delta === "string" && delta) {
+          full += delta;
+          onDelta(full);
+        }
+      } catch {
+        /* keep-alive or partial frame */
+      }
+    }
+  }
+
+  if (!full.trim()) throw new AiError("模型没有返回内容，重试一次");
+  return full;
 }
 
 function pickJson(content: string): unknown {

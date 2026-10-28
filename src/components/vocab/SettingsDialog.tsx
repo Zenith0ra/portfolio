@@ -79,7 +79,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-3.5">
-          <h2 className="text-[14px] font-medium text-white">设置</h2>
+          <h2 className="text-[15px] font-medium text-white">设置</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white"
@@ -90,7 +90,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
 
         <div className="space-y-4 px-5 py-4">
           <label className="block">
-            <span className="mb-1.5 block text-[12px] text-zinc-400">API Key</span>
+            <span className="mb-1.5 block text-[13px] text-zinc-400">API Key</span>
             <input
               type="password"
               value={draft.key}
@@ -102,7 +102,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-[12px] text-zinc-400">接口地址</span>
+            <span className="mb-1.5 block text-[13px] text-zinc-400">接口地址</span>
             <input
               value={draft.base}
               onChange={(e) => setDraft({ ...draft, base: e.target.value })}
@@ -112,7 +112,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
           </label>
 
           <div>
-            <span className="mb-1.5 block text-[12px] text-zinc-400">模型</span>
+            <span className="mb-1.5 block text-[13px] text-zinc-400">模型</span>
             <input
               value={draft.model}
               onChange={(e) => setDraft({ ...draft, model: e.target.value })}
@@ -136,7 +136,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
           </div>
 
           <div>
-            <span className="mb-1.5 block text-[12px] text-zinc-400">日语语音</span>
+            <span className="mb-1.5 block text-[13px] text-zinc-400">日语语音</span>
             <div className="flex gap-2">
               <select
                 value={voice ?? ""}
@@ -146,7 +146,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
                   setVoice(v);
                   speakJa("あめ", 0.9);
                 }}
-                className="min-w-0 flex-1 rounded-md border border-white/10 bg-white/[0.04] px-2 py-2 text-[12px] text-zinc-200 focus:border-purple-500/50 focus:outline-none"
+                className="min-w-0 flex-1 rounded-md border border-white/10 bg-white/[0.04] px-2 py-2 text-[13px] text-zinc-200 focus:border-purple-500/50 focus:outline-none"
               >
                 <option value="">
                   {voices.length ? "自动" : "没有日语语音"}
@@ -171,7 +171,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
 
           {result && (
             <div
-              className={`flex items-start gap-2 rounded-md px-3 py-2 text-[12px] ${
+              className={`flex items-start gap-2 rounded-md px-3 py-2 text-[13px] ${
                 result.ok
                   ? "bg-emerald-500/10 text-emerald-300"
                   : "bg-red-500/10 text-red-300"
@@ -191,7 +191,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
           <button
             onClick={test}
             disabled={testing || !draft.key.trim()}
-            className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-[12px] text-zinc-400 transition-colors hover:border-white/20 hover:text-white disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-[13px] text-zinc-400 transition-colors hover:border-white/20 hover:text-white disabled:opacity-40"
           >
             {testing && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             验证
@@ -199,7 +199,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="rounded-md px-3 py-1.5 text-[12px] text-zinc-500 transition-colors hover:text-white"
+              className="rounded-md px-3 py-1.5 text-[13px] text-zinc-500 transition-colors hover:text-white"
             >
               取消
             </button>
@@ -208,7 +208,7 @@ export function SettingsDialog({ open, cfg, onSave, onClose }: Props) {
                 onSave(draft);
                 onClose();
               }}
-              className="rounded-md bg-purple-600 px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-purple-500"
+              className="rounded-md bg-purple-600 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-purple-500"
             >
               保存
             </button>

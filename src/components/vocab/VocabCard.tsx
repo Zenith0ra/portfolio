@@ -77,20 +77,20 @@ function Front({
 
 function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] }) {
   const kanaSize = sizeFor(word.kana, [58, 50, 40]);
-  const kanjiSize = sizeFor(word.kanji || "", [30, 26, 22]);
+  const kanjiSize = sizeFor(word.kanji || "", [34, 30, 25]);
 
   return (
     <div className="flex h-full min-h-[360px] flex-col px-8 py-7 text-left">
       <div className="flex flex-wrap items-center gap-1.5">
         {word.pos && (
-          <span className="rounded border border-purple-400/25 bg-purple-500/10 px-1.5 py-0.5 text-[11px] text-purple-300">
+          <span className="rounded border border-purple-400/25 bg-purple-500/10 px-1.5 py-0.5 text-[12px] text-purple-300">
             {word.pos}
           </span>
         )}
         {word.tags.map((t) => (
           <span
             key={t}
-            className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[11px] text-zinc-500"
+            className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[12px] text-zinc-500"
           >
             {t}
           </span>
@@ -138,7 +138,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
       <div className="my-5 h-px shrink-0 bg-white/[0.07]" />
 
       <div className="min-h-0 flex-1">
-        <div className="text-[19px] leading-relaxed text-zinc-100">
+        <div className="text-[22px] leading-relaxed text-zinc-100">
           {word.meaning}
         </div>
 
@@ -152,13 +152,13 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
                     e.stopPropagation();
                     onSpeak(ex.jp, 0.85);
                   }}
-                  className="block text-left text-[15px] leading-relaxed text-zinc-300 transition-colors hover:text-white"
+                  className="block text-left text-[17px] leading-relaxed text-zinc-300 transition-colors hover:text-white"
                   style={{ fontFamily: JP_FONT }}
                 >
                   {ex.jp}
                 </button>
                 {ex.cn && (
-                  <div className="mt-0.5 text-[13px] leading-relaxed text-zinc-500">
+                  <div className="mt-1 text-[14.5px] leading-relaxed text-zinc-500">
                     {ex.cn}
                   </div>
                 )}
@@ -168,7 +168,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
         )}
 
         {word.note && (
-          <div className="mt-3 rounded bg-white/[0.03] px-2.5 py-2 text-[12px] leading-relaxed text-zinc-500">
+          <div className="mt-3 rounded bg-white/[0.03] px-2.5 py-2 text-[13.5px] leading-relaxed text-zinc-500">
             {word.note}
           </div>
         )}
@@ -197,7 +197,7 @@ export function VocabCard({ word, mode, revealed, onToggle, onSpeak }: Props) {
         >
           <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/45 to-transparent" />
           {word.tags.length > 0 && (
-            <div className="absolute inset-x-0 top-7 text-center text-[10.5px] tracking-[0.2em] text-zinc-600">
+            <div className="absolute inset-x-0 top-7 text-center text-[11.5px] tracking-[0.2em] text-zinc-600">
               {word.tags.join(" · ")}
             </div>
           )}

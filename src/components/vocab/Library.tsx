@@ -31,12 +31,12 @@ function Editor({
 
   const field = (label: string, key: keyof VocabWord, placeholder = "") => (
     <label className="flex items-center gap-2">
-      <span className="w-11 shrink-0 text-[11px] text-zinc-600">{label}</span>
+      <span className="w-11 shrink-0 text-[12px] text-zinc-600">{label}</span>
       <input
         value={String(draft[key] ?? "")}
         onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
         placeholder={placeholder}
-        className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[12px] text-zinc-200 placeholder:text-zinc-700 focus:border-purple-500/50 focus:outline-none"
+        className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[13px] text-zinc-200 placeholder:text-zinc-700 focus:border-purple-500/50 focus:outline-none"
       />
     </label>
   );
@@ -49,7 +49,7 @@ function Editor({
         {field("释义", "meaning")}
         {field("词性", "pos", "名 / 动1 / 形1")}
         <label className="flex items-center gap-2">
-          <span className="w-11 shrink-0 text-[11px] text-zinc-600">声调</span>
+          <span className="w-11 shrink-0 text-[12px] text-zinc-600">声调</span>
           <input
             type="number"
             min={0}
@@ -61,18 +61,18 @@ function Editor({
                 pitch: e.target.value === "" ? null : Number(e.target.value),
               })
             }
-            className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[12px] text-zinc-200 focus:border-purple-500/50 focus:outline-none"
+            className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[13px] text-zinc-200 focus:border-purple-500/50 focus:outline-none"
           />
         </label>
       </div>
 
       <label className="flex items-start gap-2">
-        <span className="mt-1 w-11 shrink-0 text-[11px] text-zinc-600">例句</span>
+        <span className="mt-1 w-11 shrink-0 text-[12px] text-zinc-600">例句</span>
         <textarea
           value={exampleText}
           onChange={(e) => setExampleText(e.target.value)}
           placeholder={"日语句子 | 中文"}
-          className="h-16 min-w-0 flex-1 resize-y rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[12px] leading-relaxed text-zinc-200 placeholder:text-zinc-700 focus:border-purple-500/50 focus:outline-none"
+          className="h-16 min-w-0 flex-1 resize-y rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[13px] leading-relaxed text-zinc-200 placeholder:text-zinc-700 focus:border-purple-500/50 focus:outline-none"
           style={{ fontFamily: JP }}
         />
       </label>
@@ -80,7 +80,7 @@ function Editor({
       <div className="flex justify-end gap-2 pt-1">
         <button
           onClick={onCancel}
-          className="rounded px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:text-white"
+          className="rounded px-2.5 py-1 text-[12px] text-zinc-500 transition-colors hover:text-white"
         >
           取消
         </button>
@@ -95,7 +95,7 @@ function Editor({
               .filter((e) => e.jp);
             onSave({ ...draft, examples });
           }}
-          className="rounded bg-purple-600 px-3 py-1 text-[11px] font-medium text-white transition-colors hover:bg-purple-500"
+          className="rounded bg-purple-600 px-3 py-1 text-[12px] font-medium text-white transition-colors hover:bg-purple-500"
         >
           保存
         </button>
@@ -181,24 +181,24 @@ export function Library({
                   allPicked ? new Set() : new Set(filtered.map((w) => w.id))
                 )
               }
-              className="flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1 text-[12px] text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
+              className="flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1 text-[13px] text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
             >
               <Check className="h-3 w-3" />
               {allPicked ? "取消全选" : "全选"}
             </button>
             <button
               onClick={exitSelect}
-              className="rounded-md px-2.5 py-1 text-[12px] text-zinc-500 transition-colors hover:text-white"
+              className="rounded-md px-2.5 py-1 text-[13px] text-zinc-500 transition-colors hover:text-white"
             >
               退出
             </button>
-            <span className="mx-1 text-[11.5px] tabular-nums text-zinc-600">
+            <span className="mx-1 text-[12.5px] tabular-nums text-zinc-600">
               已选 {picked.size}
             </span>
             <button
               onClick={commitDelete}
               disabled={picked.size === 0}
-              className={`ml-auto flex items-center gap-1.5 rounded-md px-3 py-1 text-[12px] font-medium transition-colors disabled:opacity-35 ${
+              className={`ml-auto flex items-center gap-1.5 rounded-md px-3 py-1 text-[13px] font-medium transition-colors disabled:opacity-35 ${
                 armed
                   ? "bg-red-500 text-white hover:bg-red-400"
                   : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
@@ -212,11 +212,11 @@ export function Library({
           <>
             <button
               onClick={() => setSelecting(true)}
-              className="rounded-md border border-white/10 px-2.5 py-1 text-[12px] text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+              className="rounded-md border border-white/10 px-2.5 py-1 text-[13px] text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
             >
               批量删除
             </button>
-            <span className="mx-1 text-[11.5px] tabular-nums text-zinc-600">
+            <span className="mx-1 text-[12.5px] tabular-nums text-zinc-600">
               {words.length} 词
             </span>
             <div className="relative ml-auto">
@@ -225,7 +225,7 @@ export function Library({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="搜索"
-                className="w-36 rounded-md border border-white/10 bg-white/[0.04] py-1 pl-7 pr-2 text-[12px] text-zinc-200 placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none"
+                className="w-40 rounded-md border border-white/10 bg-white/[0.04] py-1 pl-7 pr-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none"
               />
             </div>
           </>
@@ -233,7 +233,7 @@ export function Library({
       </div>
 
       <div className="max-h-[calc(100dvh-320px)] min-h-[220px] overflow-y-auto">
-        <div className="flex items-center gap-3 border-b border-white/[0.05] px-3.5 py-1.5 text-[10.5px] text-zinc-700">
+        <div className="flex items-center gap-3 border-b border-white/[0.05] px-3.5 py-1.5 text-[11.5px] text-zinc-700">
           {selecting && <span className="w-4 shrink-0" />}
           <span className="w-28 shrink-0">假名</span>
           <span className="hidden w-24 shrink-0 sm:block">汉字</span>
@@ -243,7 +243,7 @@ export function Library({
           <span className="w-[62px] shrink-0" />
         </div>
         {filtered.length === 0 ? (
-          <div className="px-4 py-16 text-center text-[12px] text-zinc-600">
+          <div className="px-4 py-16 text-center text-[13px] text-zinc-600">
             没有匹配的词
           </div>
         ) : (
@@ -275,24 +275,24 @@ export function Library({
                     </span>
                   )}
                   <span
-                    className="w-28 shrink-0 truncate text-[15px] text-zinc-100"
+                    className="w-28 shrink-0 truncate text-[16px] text-zinc-100"
                     style={{ fontFamily: JP }}
                   >
                     {w.kana}
                   </span>
                   <span
-                    className="hidden w-24 shrink-0 truncate text-[13px] text-zinc-500 sm:block"
+                    className="hidden w-24 shrink-0 truncate text-[14px] text-zinc-500 sm:block"
                     style={{ fontFamily: JP }}
                   >
                     {w.kanji}
                   </span>
-                  <span className="hidden w-11 shrink-0 text-[11px] text-purple-400/70 sm:block">
+                  <span className="hidden w-11 shrink-0 text-[12px] text-purple-400/70 sm:block">
                     {w.pos}
                   </span>
-                  <span className="w-8 shrink-0 text-[12px] tabular-nums text-zinc-500">
+                  <span className="w-8 shrink-0 text-[13px] tabular-nums text-zinc-500">
                     {w.pitch ?? "—"}
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-[13px] text-zinc-400">
+                  <span className="min-w-0 flex-1 truncate text-[14px] text-zinc-400">
                     {w.meaning}
                   </span>
                   {!selecting && (
