@@ -397,29 +397,29 @@ export default function VocabCardsPage() {
                           revealed={revealed}
                           onToggle={() => setRevealed((v) => !v)}
                           onSpeak={handleSpeak}
+                          action={
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (revealed) advance();
+                                else setRevealed(true);
+                              }}
+                              className="rounded-full border border-white/10 bg-white/[0.06] px-3.5 py-1.5 text-[12.5px] text-zinc-400 transition-colors hover:border-purple-400/40 hover:bg-white/[0.1] hover:text-white"
+                            >
+                              {revealed ? "下一张" : "揭晓"}
+                            </button>
+                          }
                         />
                       )}
                     </div>
 
-                    <div className="order-3 lg:order-none lg:flex">
+                    <div className="lg:flex">
                       <AiChat
                         word={current}
                         cfg={cfg}
                         onOpenSettings={() => setSettingsOpen(true)}
                       />
                     </div>
-
-                    {!finished && current && (
-                      <button
-                        onClick={() => (revealed ? advance() : setRevealed(true))}
-                        className={`order-2 w-full rounded-lg border border-white/10 bg-[#1e1e1e] py-2.5 text-[14px] transition-colors hover:border-purple-400/40 hover:text-white lg:order-none lg:col-start-1 ${
-                          revealed ? "text-zinc-300" : "text-zinc-400"
-                        }`}
-                      >
-                        {revealed ? "下一张" : "揭晓"}
-                        <span className="ml-2 text-[11px] text-zinc-700">空格</span>
-                      </button>
-                    )}
                   </div>
                 </div>
               )}

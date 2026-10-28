@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Volume2 } from "lucide-react";
 import { Furigana } from "./Furigana";
 import { PitchKana } from "./PitchMark";
@@ -17,6 +18,8 @@ interface Props {
   revealed: boolean;
   onToggle: () => void;
   onSpeak: (text: string, rate?: number) => void;
+  /** Small control pinned to the bottom of the card (reveal / next). */
+  action?: ReactNode;
 }
 
 function sizeFor(text: string, steps: [number, number, number]): number {
@@ -81,7 +84,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
   const kanjiSize = sizeFor(word.kanji || "", [34, 30, 25]);
 
   return (
-    <div className="flex h-full min-h-[360px] flex-col px-8 py-7 text-left">
+    <div className="flex h-full min-h-[360px] flex-col px-8 pb-16 pt-7 text-left">
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         {word.pos && (
           <span className="rounded border border-purple-400/25 bg-purple-500/10 px-1.5 py-0.5 text-[12px] text-purple-300">
@@ -180,7 +183,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
   );
 }
 
-export function VocabCard({ word, mode, revealed, onToggle, onSpeak }: Props) {
+export function VocabCard({ word, mode, revealed, onToggle, onSpeak, action }: Props) {
   const faceClass =
     "col-start-1 row-start-1 h-full overflow-hidden rounded-2xl border border-white/[0.09]";
 
@@ -208,6 +211,9 @@ export function VocabCard({ word, mode, revealed, onToggle, onSpeak }: Props) {
             <Front word={word} mode={mode} onSpeak={onSpeak} />
             <div className="mt-7 h-px w-9 bg-purple-400/25" />
           </div>
+          {action && (
+            <div className="absolute inset-x-0 bottom-4 flex justify-center">{action}</div>
+          )}
         </div>
 
         <div
@@ -220,6 +226,9 @@ export function VocabCard({ word, mode, revealed, onToggle, onSpeak }: Props) {
         >
           <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/45 to-transparent" />
           <Back word={word} onSpeak={onSpeak} />
+          {action && (
+            <div className="absolute inset-x-0 bottom-4 flex justify-center">{action}</div>
+          )}
         </div>
       </div>
     </div>
