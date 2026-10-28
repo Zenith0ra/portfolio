@@ -45,7 +45,7 @@ const timeline = [
     year: "2026",
     title: "Senior Year",
     description:
-      "Upcoming senior year, preparing for graduation and research.",
+      "Final year. Finishing coursework and preparing for graduate study.",
     icon: GraduationCap,
   },
 ];
@@ -124,7 +124,7 @@ export default function Home() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
-                  Class of 2023
+                  Class of 2027
                 </span>
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function Home() {
 
           <p className="max-w-2xl text-lg leading-relaxed text-zinc-400">
             A passionate Computer Science and Technology student at Tsinghua
-            University, currently in my junior year. I navigate the
+            University, now in my senior year. I navigate the
             computational landscape with curiosity and rigor, cultivating
             expertise across computational theory, artificial intelligence, and
             open-source ecosystems. I approach each challenge as both an
