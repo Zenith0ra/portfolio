@@ -82,7 +82,7 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
 
   return (
     <div className="flex h-full min-h-[360px] flex-col px-8 py-7 text-left">
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         {word.pos && (
           <span className="rounded border border-purple-400/25 bg-purple-500/10 px-1.5 py-0.5 text-[12px] text-purple-300">
             {word.pos}
@@ -98,81 +98,83 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
         ))}
       </div>
 
-      <div className="mt-6">
-        {word.kanji && (
-          <div
-            className="leading-tight text-zinc-400"
-            style={{ fontFamily: JP_FONT, fontSize: kanjiSize }}
-          >
-            {word.kanji}
-          </div>
-        )}
-        <div className="mt-2 flex items-end gap-3">
-          <PitchKana
-            kana={word.kana}
-            pitch={word.pitch}
-            fontSize={kanaSize}
-            fontFamily={JP_FONT}
-          />
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSpeak(word.kana);
-            }}
-            className="mb-2 rounded p-1.5 text-zinc-600 transition-colors hover:bg-white/5 hover:text-purple-300"
-            aria-label="发音"
-          >
-            <Volume2 className="h-4 w-4" />
-          </button>
-          {word.pitch !== null && (
-            <span
-              className="mb-1 text-[24px] font-semibold leading-none tabular-nums text-purple-300"
-              title="声调"
+      <div className="flex min-h-0 flex-1 flex-col justify-center">
+        <div className="mt-5">
+          {word.kanji && (
+            <div
+              className="leading-tight text-zinc-400"
+              style={{ fontFamily: JP_FONT, fontSize: kanjiSize }}
             >
-              {word.pitch}
-            </span>
+              {word.kanji}
+            </div>
+          )}
+          <div className="mt-2 flex items-end gap-3">
+            <PitchKana
+              kana={word.kana}
+              pitch={word.pitch}
+              fontSize={kanaSize}
+              fontFamily={JP_FONT}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSpeak(word.kana);
+              }}
+              className="mb-2 rounded p-1.5 text-zinc-600 transition-colors hover:bg-white/5 hover:text-purple-300"
+              aria-label="发音"
+            >
+              <Volume2 className="h-4 w-4" />
+            </button>
+            {word.pitch !== null && (
+              <span
+                className="mb-1 text-[24px] font-semibold leading-none tabular-nums text-purple-300"
+                title="声调"
+              >
+                {word.pitch}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="my-5 h-px shrink-0 bg-white/[0.07]" />
+
+        <div>
+          <div className="text-[22px] leading-relaxed text-zinc-100">
+            {word.meaning}
+          </div>
+
+          {word.examples.length > 0 && (
+            <div className="mt-3.5 space-y-3.5">
+              {word.examples.map((ex, i) => (
+                <div key={i} className="border-l border-purple-400/20 pl-3">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSpeak(ex.jp, 0.85);
+                    }}
+                    className="block text-left text-[17px] leading-[2] text-zinc-300 transition-colors hover:text-white"
+                    style={{ fontFamily: JP_FONT }}
+                  >
+                    <Furigana text={ex.jp} ruby={ex.ruby} size={17} />
+                  </button>
+                  {ex.cn && (
+                    <div className="mt-1 text-[14.5px] leading-relaxed text-zinc-500">
+                      {ex.cn}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {word.note && (
+            <div className="mt-3 rounded bg-white/[0.03] px-2.5 py-2 text-[13.5px] leading-relaxed text-zinc-500">
+              {word.note}
+            </div>
           )}
         </div>
-      </div>
-
-      <div className="my-5 h-px shrink-0 bg-white/[0.07]" />
-
-      <div className="min-h-0 flex-1">
-        <div className="text-[22px] leading-relaxed text-zinc-100">
-          {word.meaning}
-        </div>
-
-        {word.examples.length > 0 && (
-          <div className="mt-3.5 space-y-3.5">
-            {word.examples.map((ex, i) => (
-              <div key={i} className="border-l border-purple-400/20 pl-3">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSpeak(ex.jp, 0.85);
-                  }}
-                  className="block text-left text-[17px] leading-[2] text-zinc-300 transition-colors hover:text-white"
-                  style={{ fontFamily: JP_FONT }}
-                >
-                  <Furigana text={ex.jp} ruby={ex.ruby} size={17} />
-                </button>
-                {ex.cn && (
-                  <div className="mt-1 text-[14.5px] leading-relaxed text-zinc-500">
-                    {ex.cn}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {word.note && (
-          <div className="mt-3 rounded bg-white/[0.03] px-2.5 py-2 text-[13.5px] leading-relaxed text-zinc-500">
-            {word.note}
-          </div>
-        )}
       </div>
     </div>
   );
@@ -180,13 +182,13 @@ function Back({ word, onSpeak }: { word: VocabWord; onSpeak: Props["onSpeak"] })
 
 export function VocabCard({ word, mode, revealed, onToggle, onSpeak }: Props) {
   const faceClass =
-    "col-start-1 row-start-1 overflow-hidden rounded-2xl border border-white/[0.09]";
+    "col-start-1 row-start-1 h-full overflow-hidden rounded-2xl border border-white/[0.09]";
 
   return (
-    <div className="[perspective:1800px]">
+    <div className="h-full [perspective:1800px]">
       <div
         onClick={onToggle}
-        className="grid cursor-pointer select-none transition-transform duration-500 ease-out"
+        className="grid h-full cursor-pointer select-none transition-transform duration-500 ease-out"
         style={{
           transformStyle: "preserve-3d",
           transform: revealed ? "rotateY(180deg)" : "rotateY(0deg)",

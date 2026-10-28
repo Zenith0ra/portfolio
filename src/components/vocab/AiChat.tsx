@@ -133,7 +133,7 @@ export function AiChat({ word, cfg, onOpenSettings }: Props) {
   return (
     <div
       data-chat
-      className="flex h-[440px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e] lg:h-[500px] lg:w-[340px] lg:shrink-0 lg:self-start"
+      className="flex h-[440px] w-full flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e] lg:h-auto lg:w-[340px] lg:shrink-0"
     >
       <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5">
         <span className="text-[13.5px] text-zinc-300">问 AI</span>
