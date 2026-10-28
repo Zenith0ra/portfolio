@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUp, RotateCcw } from "lucide-react";
 import { AiError, chatReply, type AiConfig, type ChatTurn } from "@/lib/vocab/ai";
 import type { VocabWord } from "@/lib/vocab/types";
+import { Markdown } from "./Markdown";
 
 const SYSTEM = `你在陪一个中国学生背日语单词，教材是《新版中日交流标准日本语》。
 用中文回答，直接给答案，不要客套、不要总结、不要复述问题。
@@ -87,31 +88,39 @@ export function AiChat({ word, cfg, onOpenSettings }: Props) {
 
       const ctrl = new AbortController();
       abort.current = ctrl;
+      let got = false;
       try {
         await chatReply(
           turns,
           cfg,
-          (full) =>
+          (full) => {
+            got = true;
             setMessages((prev) => {
               const next = prev.slice();
               const last = next[next.length - 1];
               if (last?.role === "assistant") next[next.length - 1] = { ...last, text: full };
               return next;
-            }),
+            });
+          },
           ctrl.signal
         );
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           const msg = err instanceof AiError ? err.message : (err as Error).message;
-          setMessages((prev) => {
-            const next = prev.slice();
-            const last = next[next.length - 1];
-            if (last?.role === "assistant" && !last.text) {
-              next[next.length - 1] = { ...last, text: msg };
-            }
-            return next;
-          });
-          setError(msg);
+          if (got) {
+            // Part of the answer already arrived — keep it, report below.
+            setError(msg);
+          } else {
+            setError(null);
+            setMessages((prev) => {
+              const next = prev.slice();
+              const last = next[next.length - 1];
+              if (last?.role === "assistant" && !last.text) {
+                next[next.length - 1] = { ...last, text: msg };
+              }
+              return next;
+            });
+          }
         }
       } finally {
         setBusy(false);
@@ -124,7 +133,7 @@ export function AiChat({ word, cfg, onOpenSettings }: Props) {
   return (
     <div
       data-chat
-      className="flex h-[440px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e] lg:h-auto lg:min-h-[420px] lg:w-[340px] lg:shrink-0"
+      className="flex h-[440px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e] lg:h-[500px] lg:w-[340px] lg:shrink-0 lg:self-start"
     >
       <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5">
         <span className="text-[13.5px] text-zinc-300">问 AI</span>
@@ -142,7 +151,10 @@ export function AiChat({ word, cfg, onOpenSettings }: Props) {
         )}
       </div>
 
-      <div ref={scroller} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3.5">
+      <div
+        ref={scroller}
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-3.5 [scrollbar-color:rgba(255,255,255,0.16)_transparent] [scrollbar-width:thin]"
+      >
         {messages.length === 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {QUICK.map((q) => (
@@ -165,11 +177,12 @@ export function AiChat({ word, cfg, onOpenSettings }: Props) {
                 {m.text}
               </div>
             ) : (
-              <div
-                key={i}
-                className="whitespace-pre-wrap text-[14px] leading-[1.8] text-zinc-300"
-              >
-                {m.text || <span className="text-zinc-600">…</span>}
+              <div key={i} className="text-[14.5px] leading-[1.75] text-zinc-300">
+                {m.text ? (
+                  <Markdown text={m.text} />
+                ) : (
+                  <span className="text-zinc-600">…</span>
+                )}
               </div>
             )
           )
